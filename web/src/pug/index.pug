@@ -1,0 +1,13 @@
+extends /base.pug
+block body
+  .w-1024.mx-auto.rwd.my-4
+    div(containable)
+      div(editable) hello world!
+      div(attrable="data-name",placeholder="")
+      img(ed-type="image")
+      div(ed-type="image")
+      div(ed-type="background")
+      div(containable)
+        div(resizable) item 1
+        div(resizable) item 2
+        div(resizable) item 3
