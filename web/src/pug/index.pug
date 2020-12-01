@@ -1,13 +1,37 @@
 extends /base.pug
+block head
+  style(type="text/css"): :stylus
+    *[editable]
+      outline: 1px solid rgba(255,0,0,.3)
+      padding: 1em
+      margin: .25em
+    *[editable]:hover
+      outline: 1px solid rgba(255,255,0,.3)
+      
+
 block body
   .w-1024.mx-auto.rwd.my-4
-    div(containable)
-      div(editable) hello world!
-      div(attrable="data-name",placeholder="")
+    div#root(containable)
+      div#d1(editable)
+        h3#h3 Caption
+        div#d2(editable)
+          p nested editable
+          div#d3(editable) nested ( lv2 )
+      div(attrable="data-name",placeholder="") attrable
       img(ed-type="image")
       div(ed-type="image")
       div(ed-type="background")
       div(containable)
-        div(resizable) item 1
-        div(resizable) item 2
-        div(resizable) item 3
+        div(resizable,editable) item 1
+        div(resizable,editable) item 2
+        div(resizable,editable) item 3
+block script
+  +script("js/editable/index.js")
+  +script("js/editable/contenteditable-dynamics.js")
+  +script("js/editable/paste-plaintext.js")
+  +script("js/index.js")
+  //-
+    +script("js/caret.js")
+    +script("js/editable/index.js")
+    +script("js/editable/editable.js")
+    +script("js/index.js")
