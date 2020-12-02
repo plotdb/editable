@@ -16,6 +16,15 @@ editable = function(opt){
   });
   return this;
 };
+editable.mod = {
+  list: [],
+  register: function(name, mod){
+    return this.list.push({
+      name: name,
+      mod: mod
+    });
+  }
+};
 editable.prototype = import$(Object.create(Object.prototype), {
   on: function(n, cb){
     var ref$;
@@ -35,15 +44,17 @@ editable.prototype = import$(Object.create(Object.prototype), {
     return results$;
   },
   init: function(){
-    var this$ = this;
-    contenteditable.init.call(this);
-    /*
-    [{k,v} for k,v of contenteditable.events].map ({k,v}) ~>
-      document.addEventListener k, (e) ~> v.call @, e
-    document.addEventListener \keyup, (e) ~>
-      if e.which == 27 =>
-        contenteditable.set-editable.call @, {target: null}
-    */
+    var k, v, this$ = this;
+    (function(){
+      var ref$, results$ = [];
+      for (k in ref$ = editable.mod.list) {
+        v = ref$[k];
+        results$.push(v);
+      }
+      return results$;
+    }()).map(function(it){
+      return it.mod.init.call(this$);
+    });
     document.addEventListener('mousemove', debounce(10, function(e){
       var n;
       n = ld$.parent(e.target, '[editable]', this$.root);

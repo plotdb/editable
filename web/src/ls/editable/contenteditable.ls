@@ -1,6 +1,7 @@
 <-(->it!) _
 
 # contenteditable handles nested editable and take care of selection, clicking behavior.
+# function called by editable using apply, thus @ is editable object.
 
 contenteditable = ce = do
   events: do
@@ -25,9 +26,9 @@ contenteditable = ce = do
 contenteditable.set-editable = set-editable = ({target, x, y}) ->
   lc = @mod.contenteditable
   # calculate elapsed time between two adjacnet clicks
-  ct = contenteditable.ct
-  contenteditable.ct = Date.now!
-  delay = if ct? => (contenteditable.ct - ct) else 1000
+  ct = lc.ct
+  lc.ct = Date.now!
+  delay = if ct? => (lc.ct - ct) else 1000
   p = ld$.parent(target, '[editable]')
   if !ld$.parent(p,null,@root) => p = null
   # set lock to true to block editable change.
@@ -120,4 +121,4 @@ backspace-fix = (e) ->
     event.preventDefault!
 
 
-window.contenteditable = ce
+window.editable.{}mod.register \contenteditable, ce

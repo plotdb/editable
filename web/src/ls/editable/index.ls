@@ -9,18 +9,16 @@ editable = (opt={}) ->
   @drag = new dragger {root: @root}
   @
 
+editable.mod = do
+  list: []
+  register: (name, mod) -> @list.push {name,mod}
+
 editable.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
   init: ->
-    contenteditable.init.call @
-    /*
-    [{k,v} for k,v of contenteditable.events].map ({k,v}) ~>
-      document.addEventListener k, (e) ~> v.call @, e
-    document.addEventListener \keyup, (e) ~>
-      if e.which == 27 =>
-        contenteditable.set-editable.call @, {target: null}
-    */
+    [v for k,v of editable.mod.list].map ~> it.mod.init.call @
+
     document.addEventListener \mousemove, debounce(10, (e) ~>
       n = ld$.parent e.target, '[editable]', @root
       if !(n and n.hasAttribute and n.hasAttribute(\editable) and (n.getAttribute(\editable) != \false)) => return

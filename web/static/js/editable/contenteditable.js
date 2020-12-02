@@ -1,7 +1,7 @@
 (function(it){
   return it();
 })(function(){
-  var contenteditable, ce, setEditable, backspaceFix;
+  var contenteditable, ce, setEditable, backspaceFix, ref$;
   contenteditable = ce = {
     events: {
       mousedown: function(e){
@@ -56,9 +56,9 @@
     var target, x, y, lc, ct, delay, p, sel, r, range, n;
     target = arg$.target, x = arg$.x, y = arg$.y;
     lc = this.mod.contenteditable;
-    ct = contenteditable.ct;
-    contenteditable.ct = Date.now();
-    delay = ct != null ? contenteditable.ct - ct : 1000;
+    ct = lc.ct;
+    lc.ct = Date.now();
+    delay = ct != null ? lc.ct - ct : 1000;
     p = ld$.parent(target, '[editable]');
     if (!ld$.parent(p, null, this.root)) {
       p = null;
@@ -153,5 +153,5 @@
       return event.preventDefault();
     }
   };
-  return window.contenteditable = ce;
+  return ((ref$ = window.editable).mod || (ref$.mod = {})).register('contenteditable', ce);
 });
