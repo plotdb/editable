@@ -1,4 +1,4 @@
-var contenteditableDynamics, cd;
+var contenteditableDynamics, cd, setEditable;
 contenteditableDynamics = cd = {
   events: {}
 };
@@ -11,20 +11,36 @@ cd.events.mousemove = function(e){
   }
 };
 cd.events.click = function(e){
-  var ct, delay, p, sel, r, range, n;
+  return setEditable.call(this, {
+    target: e.target,
+    x: e.clientX,
+    y: e.clientY
+  });
+};
+cd.setEditable = setEditable = function(arg$){
+  var target, x, y, ct, delay, p, sel, r, range, n;
+  target = arg$.target, x = arg$.x, y = arg$.y;
   ct = cd.ct;
   cd.ct = Date.now();
   delay = ct != null ? cd.ct - ct : 1000;
-  p = ld$.parent(e.target, '[editable]');
+  p = ld$.parent(target, '[editable]');
   if (!ld$.parent(p, null, this.root)) {
-    return;
+    p = null;
+  }
+  if (this.activeLock && this.active !== p) {
+    p = null;
   }
   if (this.active && this.active !== p) {
     this.active.setAttribute('contenteditable', false);
   }
+  if (!this.active && p) {
+    this.fire('focus', {
+      node: p
+    });
+  }
   this.active = p;
   if (!p) {
-    return;
+    return this.fire('blur');
   }
   p.setAttribute('contenteditable', true);
   if (delay <= 250 || cd.drag) {
@@ -42,8 +58,8 @@ cd.events.click = function(e){
     });
     range = ldCaret.byPtr({
       node: p,
-      x: e.clientX,
-      y: e.clientY
+      x: x,
+      y: y
     }).range;
   }
   n = range.endContainer;

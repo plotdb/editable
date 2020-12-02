@@ -22,12 +22,13 @@ block body
       div(ed-type="image")
       div(ed-type="background")
       div(containable)
-        div(resizable,editable) item 1
-        div(resizable,editable) item 2
-        div(resizable,editable) item 3
+        div(resizable,draggable="true",editable) item 1
+        div(resizable,draggable="true",editable) item 2
+        div(resizable,draggable="true",editable) item 3
 block script
   +script("js/editable/index.js")
   +script("js/editable/contenteditable-dynamics.js")
+  +script("js/editable/drag-dynamics.js")
   +script("js/editable/paste-plaintext.js")
   +script("js/index.js")
   //-
