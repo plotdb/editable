@@ -29,7 +29,7 @@
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
     "bootstrap.native": "^3.0.13",
     "fedep": "0.0.7",
-    "focalbox": "0.0.1",
+    "focalbox": "0.0.2",
     "jsoneditor": "^9.1.1",
     "ldcaret": "^2.1.0",
     "ldcover": "^1.1.0",
