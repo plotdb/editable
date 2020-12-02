@@ -15,7 +15,10 @@ block body
       div#d1(editable)
         h3#h3 Caption
         div#d2(editable)
-          p nested editable
+          p 
+            span nested
+            span.btn.btn-primary(editable="true") Hi
+            span ditable
           div#d3(editable) nested ( lv2 )
       div(attrable="data-name",placeholder="") attrable
       img(ed-type="image")
@@ -27,7 +30,7 @@ block body
         div(resizable,draggable="true",editable) item 3
 block script
   +script("js/editable/index.js")
-  +script("js/editable/contenteditable-dynamics.js")
+  +script("js/editable/contenteditable.js")
   +script("js/editable/drag-dynamics.js")
   +script("js/editable/paste-plaintext.js")
   +script("js/index.js")

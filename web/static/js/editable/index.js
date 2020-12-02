@@ -3,6 +3,7 @@ editable = function(opt){
   opt == null && (opt = {});
   this.opt = opt;
   this.evtHandler = {};
+  this.mod = {};
   this.root = opt.root;
   this.root = typeof opt.root === 'string'
     ? ld$.find(opt.root, 0)
@@ -34,31 +35,15 @@ editable.prototype = import$(Object.create(Object.prototype), {
     return results$;
   },
   init: function(){
-    var k, v, this$ = this;
-    (function(){
-      var ref$, results$ = [];
-      for (k in ref$ = contenteditableDynamics.events) {
-        v = ref$[k];
-        results$.push({
-          k: k,
-          v: v
-        });
-      }
-      return results$;
-    }()).map(function(arg$){
-      var k, v;
-      k = arg$.k, v = arg$.v;
-      return document.addEventListener(k, function(e){
-        return v.call(this$, e);
-      });
-    });
-    document.addEventListener('keyup', function(e){
-      if (e.which === 27) {
-        return contenteditableDynamics.setEditable.call(this$, {
-          target: null
-        });
-      }
-    });
+    var this$ = this;
+    contenteditable.init.call(this);
+    /*
+    [{k,v} for k,v of contenteditable.events].map ({k,v}) ~>
+      document.addEventListener k, (e) ~> v.call @, e
+    document.addEventListener \keyup, (e) ~>
+      if e.which == 27 =>
+        contenteditable.set-editable.call @, {target: null}
+    */
     document.addEventListener('mousemove', debounce(10, function(e){
       var n;
       n = ld$.parent(e.target, '[editable]', this$.root);
@@ -71,13 +56,13 @@ editable.prototype = import$(Object.create(Object.prototype), {
       return this$.fb.setTarget(n);
     }));
     this.on('blur', function(){
-      this$.activeLock = false;
+      this$.mod.contenteditable.lock = false;
       return this$.fb.focus(false);
     });
     return this.on('focus', function(arg$){
       var node;
       node = arg$.node;
-      this$.activeLock = true;
+      this$.mod.contenteditable.lock = true;
       this$.fb.setTarget(node);
       return this$.fb.focus(true);
     });
