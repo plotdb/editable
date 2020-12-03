@@ -1,0 +1,16 @@
+/* for debugging { */
+*[editable] {
+  outline: 1px solid rgba(255,0,0,0.3);
+  padding: 1em;
+  margin: 0.25em;
+}
+*[editable]:hover {
+  outline: 1px solid rgba(255,255,0,0.3);
+}
+/* } for debugging */
+/* empty placeholder */
+*[editable]:empty:before {
+  display: inline;
+  opacity: 0.5;
+  content: "_";
+}
