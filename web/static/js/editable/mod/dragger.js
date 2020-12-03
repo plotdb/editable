@@ -7,7 +7,7 @@
       mousedown: function(e){
         var n;
         n = e.target;
-        while (n && (!n.hasAttribute && n.hasAttribute('draggable'))) {
+        while (n && !(n.hasAttribute && n.hasAttribute('draggable'))) {
           n = n.parentNode;
         }
         if (n) {

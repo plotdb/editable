@@ -6,7 +6,7 @@ hub = do
     # dragger obj will check if the corresponding node isn't inited and belongs to it.
     mousedown: (e) ->
       n = e.target
-      while n and (!n.hasAttribute and n.hasAttribute \draggable) => n = n.parentNode
+      while n and !(n.hasAttribute and n.hasAttribute \draggable) => n = n.parentNode
       if n => n.setAttribute \draggable, true
     dragstart: (e) ->
       d = @mod.dragger
