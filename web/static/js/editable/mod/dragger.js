@@ -18,9 +18,9 @@
         }
       },
       dragstart: function(e){
-        var d, src;
+        var d;
         d = this.mod.dragger;
-        src = e.target;
+        d.src = e.target;
         e.dataTransfer.setData('application/json', JSON.stringify({}));
         e.dataTransfer.setDragImage(hub.ghost, 10, 10);
         d.setDrag(true);
@@ -41,29 +41,26 @@
         return d.render(ret.range);
       },
       drop: function(e){
-        var ref$, n, d, json, data;
+        var ref$, n, d;
         ref$ = [e.target, this.mod.dragger], n = ref$[0], d = ref$[1];
         e.preventDefault();
-        d.render();
-        d.setDrag(false);
-        if (!d.contains(n)) {
-          return;
-        }
-        if (json = e.dataTransfer.getData('application/json')) {
-          return data = JSON.parse(json);
-        }
+        return d.drop({
+          evt: e
+        });
       }
     },
     ghost: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"20\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$),
     init: function(){
       return this.mod.dragger = new dragger({
-        root: this.root
+        root: this.root,
+        editable: this
       });
     }
   };
   dragger = function(opt){
     var root;
     opt == null && (opt = {});
+    this.editable = opt.editable;
     this.opt = opt;
     root = opt.root;
     this.root = root = typeof root === 'string'
@@ -100,12 +97,60 @@
         return ref$ = this.caret.box.style, ref$.display = 'none', ref$;
       }
       box = r.getBoundingClientRect();
+      this.caret.range = r;
       return import$(this.caret.box.style, {
         left: box.x + "px",
         top: box.y + "px",
         height: box.height + "px",
         display: 'block'
       });
+    },
+    drop: function(arg$){
+      var evt, range, sc, so, ta, n, data, json, text, this$ = this;
+      evt = arg$.evt;
+      range = this.caret.range;
+      this.render(null);
+      if (!(range && this.root.contains(evt.target))) {
+        return;
+      }
+      sc = range.startContainer;
+      so = range.startOffset;
+      ta = sc.nodeType === Element.TEXT_NODE
+        ? sc
+        : sc.childNodes[so];
+      if (!(n = this.src)) {
+        data = (json = evt.dataTransfer.getData('application/json'))
+          ? JSON.parse(json)
+          : {};
+        if (data.type === 'block') {
+          return blocktmp.get({
+            name: data.data.name
+          }).then(function(dom){
+            return deserialize(dom);
+          }).then(function(ret){
+            ta.parentNode.insertBefore(ret.node, ta);
+            return this$.editable.fire('change');
+          })['catch'](function(it){
+            return console.log(it);
+          });
+        }
+      } else {
+        if (ld$.parent(ta, null, n)) {
+          return;
+        }
+        if (ta.nodeType === Element.TEXT_NODE) {
+          n.parentNode.removeChild(n);
+          text = ta.textContent;
+          [document.createTextNode(text.substring(0, so)), n, document.createTextNode(text.substring(so))].map(function(it){
+            return ta.parentNode.insertBefore(it, ta);
+          });
+          ta.parentNode.removeChild(ta);
+        } else {
+          n.parentNode.removeChild(n);
+          ta.parentNode.insertBefore(n, ta);
+        }
+        return this.editable.fire('change');
+      }
     }
   });
   return ((ref$ = window.editable).mod || (ref$.mod = {})).register('dragger', hub);

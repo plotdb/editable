@@ -1,3 +1,4 @@
+ - drag for both block / inline type
  - image resizer
  - block tree group / ungroup mechanism
  - inline style editing and toolbar
