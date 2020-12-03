@@ -1,3 +1,3 @@
 ed = new editable do
-  root: document.body
+  root: ld$.find(\#root, 0)
 ed.init!

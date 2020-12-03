@@ -6,6 +6,9 @@
     events: {
       mousedown: function(e){
         var n;
+        if (!this.mod.dragger.contains(e.target)) {
+          return;
+        }
         n = e.target;
         while (n && !(n.hasAttribute && n.hasAttribute('draggable'))) {
           n = n.parentNode;
@@ -25,6 +28,7 @@
       },
       dragover: function(e){
         var d, ret;
+        e.preventDefault();
         d = this.mod.dragger;
         ret = ldCaret.byPtr({
           node: document.body,
@@ -34,21 +38,20 @@
         if (!d.contains(ret.range.startContainer)) {
           return;
         }
-        d.render(ret.range);
-        return e.preventDefault();
+        return d.render(ret.range);
       },
       drop: function(e){
         var ref$, n, d, json, data;
         ref$ = [e.target, this.mod.dragger], n = ref$[0], d = ref$[1];
+        e.preventDefault();
+        d.render();
+        d.setDrag(false);
         if (!d.contains(n)) {
           return;
         }
         if (json = e.dataTransfer.getData('application/json')) {
-          data = JSON.parse(json);
+          return data = JSON.parse(json);
         }
-        d.render();
-        d.setDrag(false);
-        return e.preventDefault();
       }
     },
     ghost: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"20\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$),
@@ -82,16 +85,7 @@
   dragger.prototype = import$(Object.create(Object.prototype), {
     init: function(){
       this.caret.box = document.createElement("div");
-      import$(this.caret.box.style, {
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        display: 'none',
-        border: '2px solid #f0f',
-        pointerEvents: 'none',
-        transition: "opacity .15s ease-in-out",
-        animation: "blink .4s linear infinite"
-      });
+      this.caret.box.classList.add('mod-dragger-caret');
       return document.body.appendChild(this.caret.box);
     },
     contains: function(n){
@@ -110,9 +104,6 @@
         left: box.x + "px",
         top: box.y + "px",
         height: box.height + "px",
-        width: '2px',
-        position: 'absolute',
-        border: "2px solid #f00",
         display: 'block'
       });
     }
