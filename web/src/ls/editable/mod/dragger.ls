@@ -1,47 +1,40 @@
+<-(->it!) _
+
 hub = do
-  list: []
-  add: ->
-    @init!
-    @list.push it
-  host: (n) -> host = @list.filter(-> it.root.contains n).0
-  init: ->
-    if @inited => return
-    @inited = true
-
-    hub.ghost = new Image!
-    hub.ghost.src = "data:image/svg+xml," + encodeURIComponent("""
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 20 15">
-    <rect x="0" y="0" width="20" height="15" fill="rgba(0,0,0,.5)"/>
-    </svg>""")
-
-
+  events: do
     # DOM might change, so we reinit drag/drop handler each time when necessary.
     # dragger obj will check if the corresponding node isn't inited and belongs to it.
-    document.addEventListener \mousedown, (e) ~>
+    mousedown: (e) ->
       n = e.target
       while n and (!n.hasAttribute and n.hasAttribute \draggable) => n = n.parentNode
       if n => n.setAttribute \draggable, true
-
-    document.addEventListener \dragstart, (e) ->
+    dragstart: (e) ->
+      d = @mod.dragger
       src = e.target
       e.dataTransfer.setData(\application/json, JSON.stringify({}))
       e.dataTransfer.setDragImage(hub.ghost,10,10)
-      hub.dragging = true #dd
+      d.set-drag true
       e.stopPropagation!
-
-    document.addEventListener \dragover, (e) ~>
+    dragover: (e) ->
+      d = @mod.dragger
       ret = ldCaret.by-ptr {node: document.body, x: e.clientX, y: e.clientY}
-      if !(host = @host(ret.range.startContainer)) => return
-      host.render ret.range
+      if !d.contains(ret.range.startContainer) => return
+      d.render ret.range
+      e.preventDefault!
+    drop: (e) ->
+      [n,d] = [e.target, @mod.dragger]
+      if !d.contains(n) => return
+      if (json = e.dataTransfer.getData \application/json) => data = JSON.parse json
+      d.render!
+      d.set-drag false
       e.preventDefault!
 
-    document.addEventListener \drop, (e) ~>
-      n = e.target
-      if (json = e.dataTransfer.getData \application/json) => data = JSON.parse json
-      if !(host = @host(n)) => return
-      host.render!
-      hub.dragging = false #dd
-      e.preventDefault!
+
+  ghost: (new Image!) <<< src: "data:image/svg+xml," + encodeURIComponent("""
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 20 15">
+    <rect x="0" y="0" width="20" height="15" fill="rgba(0,0,0,.5)"/>
+    </svg>""")
+  init: -> @mod.dragger = new dragger {root:@root} 
 
 dragger = (opt={}) ->
   @opt = opt
@@ -69,8 +62,8 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       transition: "opacity .15s ease-in-out"
       animation: "blink .4s linear infinite"
     document.body.appendChild @caret.box
-    hub.add @
-
+  contains: (n) -> @root.contains n
+  set-drag: -> @dragging = it
   render: (r) ->
     if !r => return @caret.box.style <<< display: \none
     box = r.getBoundingClientRect!
@@ -83,5 +76,4 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       border: "2px solid \#f00"
       display: \block
 
-
-
+window.editable.{}mod.register \dragger, hub

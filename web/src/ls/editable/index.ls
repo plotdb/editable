@@ -5,10 +5,10 @@ editable = (opt={}) ->
   @mod = {}
   @ <<< opt{root}
   @root = if typeof(opt.root) == \string => ld$.find(opt.root, 0) else opt.root
-  @fb = new focalbox {host: @root}
-  @drag = new dragger {root: @root}
   @
 
+# We modularize functions and features with editable.mod and individual files 
+# to make it easier to maintain this complex system
 editable.mod = do
   list: []
   register: (name, mod) -> @list.push {name,mod}
@@ -17,20 +17,8 @@ editable.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> @evt-handler.[][n].push cb
   fire: (n, ...v) -> for cb in (@evt-handler[n] or []) => cb.apply @, v
   init: ->
-    [v for k,v of editable.mod.list].map ~> it.mod.init.call @
-
-    document.addEventListener \mousemove, debounce(10, (e) ~>
-      n = ld$.parent e.target, '[editable]', @root
-      if !(n and n.hasAttribute and n.hasAttribute(\editable) and (n.getAttribute(\editable) != \false)) => return
-      if @fb.is-focused! => return
-      @fb.set-target n
-    )
-
-    @on \blur, ~>
-      @mod.contenteditable.lock = false
-      @fb.focus false
-    @on \focus, ({node}) ~>
-      @mod.contenteditable.lock = true
-      @fb.set-target node
-      @fb.focus true
-
+    [v for k,v of editable.mod.list].map (m) ~>
+      # init each module ( mod.init ) , and register event listener for each of them. ( mod.events )
+      m.mod.init.call @
+      ({k,v}) <~ [{k,v} for k,v of (m.mod.events or {})].map _
+      document.addEventListener k, (e) ~> v.call @, e

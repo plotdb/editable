@@ -31,25 +31,7 @@
       }
     },
     init: function(){
-      var k, v, this$ = this;
-      this.mod.contenteditable = {};
-      return (function(){
-        var ref$, results$ = [];
-        for (k in ref$ = ce.events) {
-          v = ref$[k];
-          results$.push({
-            k: k,
-            v: v
-          });
-        }
-        return results$;
-      }()).map(function(arg$){
-        var k, v;
-        k = arg$.k, v = arg$.v;
-        return document.addEventListener(k, function(e){
-          return v.call(this$, e);
-        });
-      });
+      return this.mod.contenteditable = {};
     }
   };
   contenteditable.setEditable = setEditable = function(arg$){

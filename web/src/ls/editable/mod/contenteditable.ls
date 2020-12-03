@@ -19,7 +19,7 @@ contenteditable = ce = do
     keyup: (e) -> if e.which == 27 => ce.set-editable.call @, {target: null}
   init: ->
     @mod.contenteditable = {}
-    [{k,v} for k,v of ce.events].map ({k,v}) ~> document.addEventListener k, (e) ~> v.call @, e
+    #[{k,v} for k,v of ce.events].map ({k,v}) ~> document.addEventListener k, (e) ~> v.call @, e
 
 # clicking on some editable. it's possible that this is double / triple click or even a drag to select.
 # if possible, focus on the editable and tell editor that we want to edit by returning true.

@@ -8,12 +8,6 @@ editable = function(opt){
   this.root = typeof opt.root === 'string'
     ? ld$.find(opt.root, 0)
     : opt.root;
-  this.fb = new focalbox({
-    host: this.root
-  });
-  this.drag = new dragger({
-    root: this.root
-  });
   return this;
 };
 editable.mod = {
@@ -45,37 +39,33 @@ editable.prototype = import$(Object.create(Object.prototype), {
   },
   init: function(){
     var k, v, this$ = this;
-    (function(){
+    return (function(){
       var ref$, results$ = [];
       for (k in ref$ = editable.mod.list) {
         v = ref$[k];
         results$.push(v);
       }
       return results$;
-    }()).map(function(it){
-      return it.mod.init.call(this$);
-    });
-    document.addEventListener('mousemove', debounce(10, function(e){
-      var n;
-      n = ld$.parent(e.target, '[editable]', this$.root);
-      if (!(n && n.hasAttribute && n.hasAttribute('editable') && n.getAttribute('editable') !== 'false')) {
-        return;
-      }
-      if (this$.fb.isFocused()) {
-        return;
-      }
-      return this$.fb.setTarget(n);
-    }));
-    this.on('blur', function(){
-      this$.mod.contenteditable.lock = false;
-      return this$.fb.focus(false);
-    });
-    return this.on('focus', function(arg$){
-      var node;
-      node = arg$.node;
-      this$.mod.contenteditable.lock = true;
-      this$.fb.setTarget(node);
-      return this$.fb.focus(true);
+    }()).map(function(m){
+      var k, v;
+      m.mod.init.call(this$);
+      return (function(){
+        var ref$, results$ = [];
+        for (k in ref$ = m.mod.events || {}) {
+          v = ref$[k];
+          results$.push({
+            k: k,
+            v: v
+          });
+        }
+        return results$;
+      }()).map(function(arg$){
+        var k, v;
+        k = arg$.k, v = arg$.v;
+        return document.addEventListener(k, function(e){
+          return v.call(this$, e);
+        });
+      });
     });
   }
 });
