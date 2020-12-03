@@ -110,7 +110,14 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     else
       # test code
       node = document.createElement(if data.display == \block => \div else \span)
+      node.setAttribute \editable, true
       node.innerText = JSON.stringify(data)
+      node.innerHTML = switch data.name
+      | \button => """<div class="btn btn-primary"> Button </div>"""
+      | \list => """<ul><li>List</li></ul>"""
+      | \image => """<img src="https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"/>"""
+      | \table => """<table><tr><td>table</td></tr></table>"""
+      | otherwise => """dummy"""
       @insert {range, parent, node, display: (data.display or 'inline')}
 
   insert: ({parent, range, node, display}) ->

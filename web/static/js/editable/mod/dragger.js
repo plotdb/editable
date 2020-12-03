@@ -178,7 +178,22 @@
         });
       } else {
         node = document.createElement(data.display === 'block' ? 'div' : 'span');
+        node.setAttribute('editable', true);
         node.innerText = JSON.stringify(data);
+        node.innerHTML = (function(){
+          switch (data.name) {
+          case 'button':
+            return "<div class=\"btn btn-primary\"> Button </div>";
+          case 'list':
+            return "<ul><li>List</li></ul>";
+          case 'image':
+            return "<img src=\"https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png\"/>";
+          case 'table':
+            return "<table><tr><td>table</td></tr></table>";
+          default:
+            return "dummy";
+          }
+        }());
         return this.insert({
           range: range,
           parent: parent,
