@@ -5,16 +5,19 @@
   main = {
     events: {
       dragstart: function(e){
-        var n, data;
+        var n, data, x$;
         n = e.target;
-        data = {
-          name: n.getAttribute('data-name')
-        };
-        if (data.name === 'table') {
-          data.display = 'block';
+        if (!ld$.parent(n, '[ld=menu]')) {
+          return;
         }
-        e.dataTransfer.setData('application/json', JSON.stringify(data));
-        e.dataTransfer.setDragImage(main.ghost, 10, 10);
+        data = {
+          name: n.getAttribute('data-name') || 'unnamed',
+          mode: n.getAttribute('data-mode') || 'block'
+        };
+        x$ = e.dataTransfer;
+        x$.setData('application/json', JSON.stringify(data));
+        x$.setData("mode/" + data.mode, JSON.stringify(data));
+        x$.setDragImage(main.ghost, 10, 10);
         return e.stopPropagation();
       }
     },

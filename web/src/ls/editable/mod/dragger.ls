@@ -1,6 +1,13 @@
 <-(->it!) _
 
-# TODO drag-insert / insert / typematch parameter `display`: better name?
+/*
+interface
+ - e.dataTransfer ( drag data )
+   - application/json - json in datadom format
+   - mode/<mode> - determine display type. possible values:
+     - inline
+     - block
+*/
 
 # we might have dragover from outside world ( like, block manager )
 hub = do
@@ -16,8 +23,12 @@ hub = do
       if !(@mod.dragger.contains e.target) => return
       d = @mod.dragger
       d.src = e.target
-      e.dataTransfer.setData(\application/json, JSON.stringify({}))
-      e.dataTransfer.setDragImage(hub.ghost,10,10)
+      mode = if /inline/.exec(getComputedStyle(d.src).display) => \inline else \block
+      data = {mode}
+      e.dataTransfer
+        ..setData \application/json, JSON.stringify(data)
+        ..setData "mode/#{mode}", ''
+        ..setDragImage hub.ghost, 10, 10
       d.set-drag true
       e.stopPropagation!
 
@@ -27,8 +38,8 @@ hub = do
       d = @mod.dragger
       ret = ldCaret.by-ptr {node: @root, x: e.clientX, y: e.clientY, method: \euclidean}
       if !d.contains(ret.range.startContainer) => return
-      # TODO how can we determine display by the source data while we can't access dataTransfer?
-      d.render {display: \inline} <<< ret{range}
+      mode = e.dataTransfer.types.map(->/mode\/(.+)/.exec(it)).filter(->it).map(->it.1).0 or \inline
+      d.render {mode} <<< ret{range}
     drop: (e) ->
       [n,d] = [e.target, @mod.dragger]
       e.preventDefault!
@@ -61,21 +72,20 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     document.body.appendChild @caret.box
   contains: (n) -> @root.contains n
   set-drag: -> @dragging = it
-  typematch: ({node,parent,display}) ->
-    [n,p,d,type] = [node,parent,display,0]
-    if !(p and (n or d)) => return 0
-    d = (if d => d else if n => getComputedStyle(n).display else '') or \inline
+  typematch: ({node,parent,mode}) ->
+    [n,p,m,type] = [node,parent,mode,0]
+    if !(p and (n or m)) => return 0
     # block
-    if p.hasAttribute(\hostable) and !/inline/.exec(d) => type += 1
+    if p.hasAttribute(\hostable) and m == \inline => type += 1
     # inline-block
-    if p.hasAttribute(\editable) and p.getAttribute(\editable) != \false and /inline/.exec(d) => type += 2
+    if p.hasAttribute(\editable) and p.getAttribute(\editable) != \false and m == \inline => type += 2
     return type
 
   render: (opt={}) ->
     range = opt.range
     if !range => return @caret.box.style <<< display: \none
     parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
-    insertable = @typematch {parent} <<< (if @src => {node: @src} else opt{display})
+    insertable = @typematch {parent} <<< opt{mode} <<< (if @src => {node: @src} else {})
 
     box = range.getBoundingClientRect!
     @caret.range = range
@@ -88,18 +98,21 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       filter: if insertable => '' else "saturate(0)"
 
   drop: ({evt}) ->
-    range = @caret.range
+    [range,node] = [@caret.range, @src]
+    @src = null
     # always render(null) to clear since we might have already rendered before and not yet clear it.
     @render!
     if !(range and @root.contains(evt.target)) => return
     parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
     if !parent => return
 
-    # src exists - user is dragging inner element.
-    if @src => return @insert {range, parent, node: @src}
+    # src node exists - user is dragging inner element.
+    mode = evt.dataTransfer.types.map(->/mode\/(.+)/.exec(it)).filter(->it).map(->it.1).0 or \inline
+    if node => return @insert {range, parent, mode, node}
 
-    # src doesn't exist - unknown data source. we parse dataTransfer for further information
+    # src node doesn't exist - unknown data source. we parse dataTransfer for further information
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
+    data = if (json = evt.dataTransfer.getData \mode/inline) => JSON.parse json else {}
     if data.type == \block =>
       blocktmp.get {name: data.data.name}
         .then (dom) ~> deserialize dom
@@ -109,7 +122,7 @@ dragger.prototype = Object.create(Object.prototype) <<< do
         .catch -> console.log it
     else
       # test code
-      node = document.createElement(if data.display == \block => \div else \span)
+      node = document.createElement(if data.mode == \block => \div else \span)
       node.setAttribute \editable, true
       node.innerText = JSON.stringify(data)
       node.innerHTML = switch data.name
@@ -118,10 +131,10 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       | \image => """<img src="https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"/>"""
       | \table => """<table><tr><td>table</td></tr></table>"""
       | otherwise => """dummy"""
-      @insert {range, parent, node, display: (data.display or 'inline')}
+      @insert {range, parent, node, mode: (data.mode or 'inline')}
 
-  insert: ({parent, range, node, display}) ->
-    [p,r,n,d] = [parent, range, node, display]
+  insert: ({parent, range, node, mode}) ->
+    [p,r,n,m] = [parent, range, node, mode]
 
     sc = range.startContainer
     so = range.startOffset
@@ -130,7 +143,7 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     # prevent from inserting to self
     if ld$.parent ta, null, n => return
     # test if the container accept something like n
-    if !(type = @typematch({parent: p, node: n, display: d})) => return
+    if !(type = @typematch({parent: p, node: n, mode: m})) => return
     # hostable type only accepts insertion under root element
     if (type .&. 1) =>
       while ta
@@ -148,7 +161,7 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       ta.parentNode.removeChild ta
     else
       if n.parentNode => n.parentNode.removeChild n
-      if display == \block =>
+      if mode == \block =>
         # we are going to insert block node. determine before / after according to caret position
         r1 = document.createRange!
         r2 = document.createRange!

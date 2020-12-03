@@ -1,6 +1,14 @@
 (function(it){
   return it();
 })(function(){
+  /*
+  interface
+   - e.dataTransfer ( drag data )
+     - application/json - json in datadom format
+     - mode/<mode> - determine display type. possible values:
+       - inline
+       - block
+  */
   var hub, ref$, dragger;
   hub = {
     events: {
@@ -18,19 +26,25 @@
         }
       },
       dragstart: function(e){
-        var d;
+        var d, mode, data, x$;
         if (!this.mod.dragger.contains(e.target)) {
           return;
         }
         d = this.mod.dragger;
         d.src = e.target;
-        e.dataTransfer.setData('application/json', JSON.stringify({}));
-        e.dataTransfer.setDragImage(hub.ghost, 10, 10);
+        mode = /inline/.exec(getComputedStyle(d.src).display) ? 'inline' : 'block';
+        data = {
+          mode: mode
+        };
+        x$ = e.dataTransfer;
+        x$.setData('application/json', JSON.stringify(data));
+        x$.setData("mode/" + mode, '');
+        x$.setDragImage(hub.ghost, 10, 10);
         d.setDrag(true);
         return e.stopPropagation();
       },
       dragover: function(e){
-        var d, ret, ref$;
+        var d, ret, mode, ref$;
         e.preventDefault();
         d = this.mod.dragger;
         ret = ldCaret.byPtr({
@@ -42,8 +56,15 @@
         if (!d.contains(ret.range.startContainer)) {
           return;
         }
+        mode = e.dataTransfer.types.map(function(it){
+          return /mode\/(.+)/.exec(it);
+        }).filter(function(it){
+          return it;
+        }).map(function(it){
+          return it[1];
+        })[0] || 'inline';
         return d.render((ref$ = {
-          display: 'inline'
+          mode: mode
         }, ref$.range = ret.range, ref$));
       },
       drop: function(e){
@@ -98,19 +119,16 @@
       return this.dragging = it;
     },
     typematch: function(arg$){
-      var node, parent, display, ref$, n, p, d, type;
-      node = arg$.node, parent = arg$.parent, display = arg$.display;
-      ref$ = [node, parent, display, 0], n = ref$[0], p = ref$[1], d = ref$[2], type = ref$[3];
-      if (!(p && (n || d))) {
+      var node, parent, mode, ref$, n, p, m, type;
+      node = arg$.node, parent = arg$.parent, mode = arg$.mode;
+      ref$ = [node, parent, mode, 0], n = ref$[0], p = ref$[1], m = ref$[2], type = ref$[3];
+      if (!(p && (n || m))) {
         return 0;
       }
-      d = (d
-        ? d
-        : n ? getComputedStyle(n).display : '') || 'inline';
-      if (p.hasAttribute('hostable') && !/inline/.exec(d)) {
+      if (p.hasAttribute('hostable') && m === 'inline') {
         type += 1;
       }
-      if (p.hasAttribute('editable') && p.getAttribute('editable') !== 'false' && /inline/.exec(d)) {
+      if (p.hasAttribute('editable') && p.getAttribute('editable') !== 'false' && m === 'inline') {
         type += 2;
       }
       return type;
@@ -123,15 +141,13 @@
         return ref$ = this.caret.box.style, ref$.display = 'none', ref$;
       }
       parent = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
-      insertable = this.typematch(import$({
+      insertable = this.typematch(import$((ref$ = {
         parent: parent
-      }, this.src
+      }, ref$.mode = opt.mode, ref$), this.src
         ? {
           node: this.src
         }
-        : {
-          display: opt.display
-        }));
+        : {}));
       box = range.getBoundingClientRect();
       this.caret.range = range;
       return import$(this.caret.box.style, {
@@ -144,9 +160,10 @@
       });
     },
     drop: function(arg$){
-      var evt, range, parent, data, json, node, this$ = this;
+      var evt, ref$, range, node, parent, mode, data, json, this$ = this;
       evt = arg$.evt;
-      range = this.caret.range;
+      ref$ = [this.caret.range, this.src], range = ref$[0], node = ref$[1];
+      this.src = null;
       this.render();
       if (!(range && this.root.contains(evt.target))) {
         return;
@@ -155,14 +172,25 @@
       if (!parent) {
         return;
       }
-      if (this.src) {
+      mode = evt.dataTransfer.types.map(function(it){
+        return /mode\/(.+)/.exec(it);
+      }).filter(function(it){
+        return it;
+      }).map(function(it){
+        return it[1];
+      })[0] || 'inline';
+      if (node) {
         return this.insert({
           range: range,
           parent: parent,
-          node: this.src
+          mode: mode,
+          node: node
         });
       }
       data = (json = evt.dataTransfer.getData('application/json'))
+        ? JSON.parse(json)
+        : {};
+      data = (json = evt.dataTransfer.getData('mode/inline'))
         ? JSON.parse(json)
         : {};
       if (data.type === 'block') {
@@ -177,7 +205,7 @@
           return console.log(it);
         });
       } else {
-        node = document.createElement(data.display === 'block' ? 'div' : 'span');
+        node = document.createElement(data.mode === 'block' ? 'div' : 'span');
         node.setAttribute('editable', true);
         node.innerText = JSON.stringify(data);
         node.innerHTML = (function(){
@@ -198,14 +226,14 @@
           range: range,
           parent: parent,
           node: node,
-          display: data.display || 'inline'
+          mode: data.mode || 'inline'
         });
       }
     },
     insert: function(arg$){
-      var parent, range, node, display, ref$, p, r, n, d, sc, so, ta, type, text, r1, r2, lstr, rstr;
-      parent = arg$.parent, range = arg$.range, node = arg$.node, display = arg$.display;
-      ref$ = [parent, range, node, display], p = ref$[0], r = ref$[1], n = ref$[2], d = ref$[3];
+      var parent, range, node, mode, ref$, p, r, n, m, sc, so, ta, type, text, r1, r2, lstr, rstr;
+      parent = arg$.parent, range = arg$.range, node = arg$.node, mode = arg$.mode;
+      ref$ = [parent, range, node, mode], p = ref$[0], r = ref$[1], n = ref$[2], m = ref$[3];
       sc = range.startContainer;
       so = range.startOffset;
       ta = sc.nodeType === Element.TEXT_NODE
@@ -217,7 +245,7 @@
       if (!(type = this.typematch({
         parent: p,
         node: n,
-        display: d
+        mode: m
       }))) {
         return;
       }
@@ -242,7 +270,7 @@
         if (n.parentNode) {
           n.parentNode.removeChild(n);
         }
-        if (display === 'block') {
+        if (mode === 'block') {
           r1 = document.createRange();
           r2 = document.createRange();
           r1.setStart(p, 0);

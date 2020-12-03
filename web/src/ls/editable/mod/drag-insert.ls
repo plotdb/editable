@@ -4,10 +4,14 @@ main = do
   events: do
     dragstart: (e) ->
       n = e.target
-      data = {name: n.getAttribute(\data-name)}
-      if data.name == \table => data.display = \block
-      e.dataTransfer.setData(\application/json, JSON.stringify(data))
-      e.dataTransfer.setDragImage(main.ghost,10,10)
+      if !( ld$.parent n, '[ld=menu]' ) => return
+      data = do
+        name: n.getAttribute(\data-name) or \unnamed
+        mode: n.getAttribute(\data-mode) or \block
+      e.dataTransfer
+        ..setData \application/json, JSON.stringify(data)
+        ..setData "mode/#{data.mode}", JSON.stringify(data)
+        ..setDragImage main.ghost, 10, 10
       e.stopPropagation!
   ghost: (new Image!) <<< src: "data:image/svg+xml," + encodeURIComponent("""
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 20 15">

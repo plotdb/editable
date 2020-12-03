@@ -4,11 +4,11 @@ block head
 block body
   .w-1024.mx-auto.rwd.my-4.d-flex
     .m-2.mr-4
-      .list-group
-        .list-group-item(draggable="true",data-name="button") button
-        .list-group-item(draggable="true",data-name="image") image
-        .list-group-item(draggable="true",data-name="table") table
-        .list-group-item(draggable="true",data-name="list") list
+      .list-group(ld="menu")
+        .list-group-item(draggable="true",data-name="button",data-mode="inline") button
+        .list-group-item(draggable="true",data-name="image",data-mode="inline") image
+        .list-group-item(draggable="true",data-name="table",data-mode="block") table
+        .list-group-item(draggable="true",data-name="list",data-mode="block") list
     .flex-grow-1
       div#root(hostable)
         div#d1(editable)
