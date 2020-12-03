@@ -10,23 +10,23 @@ block body
         .list-group-item(draggable="true") Item 3
         .list-group-item(draggable="true") Item 4
     .flex-grow-1
-      div#root(containable)
+      div#root(hostable)
         div#d1(editable)
           h3#h3 Caption
           div#d2(editable)
             p 
               span nested
-              span.btn.btn-primary(editable="true") Hi
+              span.btn.btn-primary(draggable,editable="true") Hi
               span ditable
             div#d3(editable) nested ( lv2 )
         div(attrable="data-name",placeholder="") attrable
         img(ed-type="image")
         div(ed-type="image")
         div(ed-type="background")
-        div(containable)
-          div(resizable,draggable,editable) item 1
-          div(resizable,draggable,editable) item 2
-          div(resizable,draggable,editable) item 3
+        .list-group(hostable)
+          .list-group-item(resizable,draggable,editable) item 1
+          .list-group-item(resizable,draggable,editable) item 2
+          .list-group-item(resizable,draggable) item 3
 
 block script
   +script("js/editable/index.js")

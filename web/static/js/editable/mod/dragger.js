@@ -31,14 +31,17 @@
         e.preventDefault();
         d = this.mod.dragger;
         ret = ldCaret.byPtr({
-          node: document.body,
+          node: this.root,
           x: e.clientX,
-          y: e.clientY
+          y: e.clientY,
+          method: 'euclidean'
         });
         if (!d.contains(ret.range.startContainer)) {
           return;
         }
-        return d.render(ret.range);
+        return d.render({
+          range: ret.range
+        });
       },
       drop: function(e){
         var ref$, n, d;
@@ -91,26 +94,55 @@
     setDrag: function(it){
       return this.dragging = it;
     },
-    render: function(r){
-      var ref$, box;
-      if (!r) {
+    typematch: function(arg$){
+      var n, p, type, display;
+      n = arg$.n, p = arg$.p;
+      if (!(n && p)) {
+        return 0;
+      }
+      type = 0;
+      display = n ? getComputedStyle(n).display : void 8;
+      if (p.hasAttribute('hostable') && !/inline/.exec(display)) {
+        type += 1;
+      }
+      if (p.hasAttribute('editable') && p.getAttribute('editable') !== 'false' && /inline/.exec(display)) {
+        type += 2;
+      }
+      return type;
+    },
+    render: function(opt){
+      var range, ref$, p, insertable, box;
+      opt == null && (opt = {});
+      range = opt.range;
+      if (!range) {
         return ref$ = this.caret.box.style, ref$.display = 'none', ref$;
       }
-      box = r.getBoundingClientRect();
-      this.caret.range = r;
+      p = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
+      insertable = this.typematch({
+        p: p,
+        n: this.src
+      });
+      box = range.getBoundingClientRect();
+      this.caret.range = range;
       return import$(this.caret.box.style, {
         left: box.x + "px",
         top: box.y + "px",
         height: box.height + "px",
-        display: 'block'
+        display: 'block',
+        opacity: insertable ? 1 : 0.4,
+        filter: insertable ? '' : "saturate(0)"
       });
     },
     drop: function(arg$){
-      var evt, range, sc, so, ta, n, data, json, text, this$ = this;
+      var evt, range, p, sc, so, ta, n, data, json, type, text, this$ = this;
       evt = arg$.evt;
       range = this.caret.range;
-      this.render(null);
+      this.render();
       if (!(range && this.root.contains(evt.target))) {
+        return;
+      }
+      p = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
+      if (!p) {
         return;
       }
       sc = range.startContainer;
@@ -118,7 +150,8 @@
       ta = sc.nodeType === Element.TEXT_NODE
         ? sc
         : sc.childNodes[so];
-      if (!(n = this.src)) {
+      n = this.src;
+      if (!n) {
         data = (json = evt.dataTransfer.getData('application/json'))
           ? JSON.parse(json)
           : {};
@@ -137,6 +170,20 @@
       } else {
         if (ld$.parent(ta, null, n)) {
           return;
+        }
+        if (!(type = this.typematch({
+          p: p,
+          n: n
+        }))) {
+          return;
+        }
+        if (type & 1) {
+          while (ta) {
+            if (ta.parentNode === p) {
+              break;
+            }
+            ta = ta.parentNode;
+          }
         }
         if (ta.nodeType === Element.TEXT_NODE) {
           n.parentNode.removeChild(n);

@@ -23,18 +23,13 @@ hub = do
       # always preventDefault even if not in range, otherwise drop won't be triggered.
       e.preventDefault!
       d = @mod.dragger
-      ret = ldCaret.by-ptr {node: document.body, x: e.clientX, y: e.clientY}
+      ret = ldCaret.by-ptr {node: @root, x: e.clientX, y: e.clientY, method: \euclidean}
       if !d.contains(ret.range.startContainer) => return
-      d.render ret.range
+      d.render ret{range}
     drop: (e) ->
       [n,d] = [e.target, @mod.dragger]
-      # always render(null) to clear since we might have already rendered before and not yet clear it.
       e.preventDefault!
-      # d.render!
       d.drop {evt: e}
-      # d.set-drag false
-      # if !d.contains(n) => return
-      # if (json = e.dataTransfer.getData \application/json) => data = JSON.parse json
 
   ghost: (new Image!) <<< src: "data:image/svg+xml," + encodeURIComponent("""
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 20 15">
@@ -63,27 +58,46 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     document.body.appendChild @caret.box
   contains: (n) -> @root.contains n
   set-drag: -> @dragging = it
-  render: (r) ->
-    if !r => return @caret.box.style <<< display: \none
-    box = r.getBoundingClientRect!
-    @caret.range = r
+  typematch: ({n,p}) ->
+    if !(n and p) => return 0
+    type = 0
+    display = if n => getComputedStyle(n).display
+    # block
+    if p.hasAttribute(\hostable) and !/inline/.exec(display) => type += 1
+    # inline-block
+    if p.hasAttribute(\editable) and p.getAttribute(\editable) != \false and /inline/.exec(display) => type += 2
+    return type
+
+  render: (opt={}) ->
+    range = opt.range
+    if !range => return @caret.box.style <<< display: \none
+    p = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
+    insertable = @typematch {p, n: @src}
+
+    box = range.getBoundingClientRect!
+    @caret.range = range
     @caret.box.style <<< do
       left: "#{box.x}px"
       top: "#{box.y}px"
       height: "#{box.height}px"
       display: \block
+      opacity: if insertable => 1 else 0.4
+      filter: if insertable => '' else "saturate(0)"
 
   drop: ({evt}) ->
-    # Is this method good?
     range = @caret.range
-    @render null
+    # always render(null) to clear since we might have already rendered before and not yet clear it.
+    @render!
     if !(range and @root.contains(evt.target)) => return
+    p = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
+    if !p => return
 
     sc = range.startContainer
     so = range.startOffset
     ta = if sc.nodeType == Element.TEXT_NODE => sc else sc.childNodes[so]
+    n = @src
 
-    if !(n = @src) =>
+    if !n =>
       # not inner drag - check data. any better way?
       data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
       if data.type == \block =>
@@ -95,7 +109,16 @@ dragger.prototype = Object.create(Object.prototype) <<< do
           .catch -> console.log it
 
     else
+      # prevent from inserting to self
       if ld$.parent ta, null, n => return
+      # test if the container accept something like n
+      if !(type = @typematch({p, n})) => return
+      # hostable type only accepts insertion under root element
+      if (type .&. 1) =>
+        while ta
+          if ta.parentNode == p => break
+          ta = ta.parentNode
+
       if ta.nodeType == Element.TEXT_NODE
         n.parentNode.removeChild n
         text = ta.textContent

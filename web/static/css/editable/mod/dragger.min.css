@@ -1,1 +1,1 @@
-.mod-dragger-caret{position:fixed;left:0;top:0;display:none;border:2px solid #f0f;pointer-events:none;transition:opacity .15s ease-in-out;animation:blink .4s linear infinite;width:2px;position:absolute;border:2px solid red}
+.mod-dragger-caret{position:fixed;left:0;top:0;display:none;pointer-events:none;transition:opacity .15s ease-in-out;animation:blink .4s linear infinite;width:2px;position:absolute;border:1px solid #2d6;outline:1px solid #6cf}
