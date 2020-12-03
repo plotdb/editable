@@ -19,6 +19,9 @@
       },
       dragstart: function(e){
         var d;
+        if (!this.mod.dragger.contains(e.target)) {
+          return;
+        }
         d = this.mod.dragger;
         d.src = e.target;
         e.dataTransfer.setData('application/json', JSON.stringify({}));
@@ -27,7 +30,7 @@
         return e.stopPropagation();
       },
       dragover: function(e){
-        var d, ret;
+        var d, ret, ref$;
         e.preventDefault();
         d = this.mod.dragger;
         ret = ldCaret.byPtr({
@@ -39,9 +42,9 @@
         if (!d.contains(ret.range.startContainer)) {
           return;
         }
-        return d.render({
-          range: ret.range
-        });
+        return d.render((ref$ = {
+          display: 'inline'
+        }, ref$.range = ret.range, ref$));
       },
       drop: function(e){
         var ref$, n, d;
@@ -95,33 +98,40 @@
       return this.dragging = it;
     },
     typematch: function(arg$){
-      var n, p, type, display;
-      n = arg$.n, p = arg$.p;
-      if (!(n && p)) {
+      var node, parent, display, ref$, n, p, d, type;
+      node = arg$.node, parent = arg$.parent, display = arg$.display;
+      ref$ = [node, parent, display, 0], n = ref$[0], p = ref$[1], d = ref$[2], type = ref$[3];
+      if (!(p && (n || d))) {
         return 0;
       }
-      type = 0;
-      display = n ? getComputedStyle(n).display : void 8;
-      if (p.hasAttribute('hostable') && !/inline/.exec(display)) {
+      d = (d
+        ? d
+        : n ? getComputedStyle(n).display : '') || 'inline';
+      if (p.hasAttribute('hostable') && !/inline/.exec(d)) {
         type += 1;
       }
-      if (p.hasAttribute('editable') && p.getAttribute('editable') !== 'false' && /inline/.exec(display)) {
+      if (p.hasAttribute('editable') && p.getAttribute('editable') !== 'false' && /inline/.exec(d)) {
         type += 2;
       }
       return type;
     },
     render: function(opt){
-      var range, ref$, p, insertable, box;
+      var range, ref$, parent, insertable, box;
       opt == null && (opt = {});
       range = opt.range;
       if (!range) {
         return ref$ = this.caret.box.style, ref$.display = 'none', ref$;
       }
-      p = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
-      insertable = this.typematch({
-        p: p,
-        n: this.src
-      });
+      parent = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
+      insertable = this.typematch(import$({
+        parent: parent
+      }, this.src
+        ? {
+          node: this.src
+        }
+        : {
+          display: opt.display
+        }));
       box = range.getBoundingClientRect();
       this.caret.range = range;
       return import$(this.caret.box.style, {
@@ -134,70 +144,112 @@
       });
     },
     drop: function(arg$){
-      var evt, range, p, sc, so, ta, n, data, json, type, text, this$ = this;
+      var evt, range, parent, data, json, node, this$ = this;
       evt = arg$.evt;
       range = this.caret.range;
       this.render();
       if (!(range && this.root.contains(evt.target))) {
         return;
       }
-      p = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
-      if (!p) {
+      parent = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
+      if (!parent) {
         return;
       }
+      if (this.src) {
+        return this.insert({
+          range: range,
+          parent: parent,
+          node: this.src
+        });
+      }
+      data = (json = evt.dataTransfer.getData('application/json'))
+        ? JSON.parse(json)
+        : {};
+      if (data.type === 'block') {
+        return blocktmp.get({
+          name: data.data.name
+        }).then(function(dom){
+          return deserialize(dom);
+        }).then(function(ret){
+          ta.parentNode.insertBefore(ret.node, ta);
+          return this$.editable.fire('change');
+        })['catch'](function(it){
+          return console.log(it);
+        });
+      } else {
+        node = document.createElement(data.display === 'block' ? 'div' : 'span');
+        node.innerText = JSON.stringify(data);
+        return this.insert({
+          range: range,
+          parent: parent,
+          node: node,
+          display: data.display || 'inline'
+        });
+      }
+    },
+    insert: function(arg$){
+      var parent, range, node, display, ref$, p, r, n, d, sc, so, ta, type, text, r1, r2, lstr, rstr;
+      parent = arg$.parent, range = arg$.range, node = arg$.node, display = arg$.display;
+      ref$ = [parent, range, node, display], p = ref$[0], r = ref$[1], n = ref$[2], d = ref$[3];
       sc = range.startContainer;
       so = range.startOffset;
       ta = sc.nodeType === Element.TEXT_NODE
         ? sc
         : sc.childNodes[so];
-      n = this.src;
-      if (!n) {
-        data = (json = evt.dataTransfer.getData('application/json'))
-          ? JSON.parse(json)
-          : {};
-        if (data.type === 'block') {
-          return blocktmp.get({
-            name: data.data.name
-          }).then(function(dom){
-            return deserialize(dom);
-          }).then(function(ret){
-            ta.parentNode.insertBefore(ret.node, ta);
-            return this$.editable.fire('change');
-          })['catch'](function(it){
-            return console.log(it);
-          });
-        }
-      } else {
-        if (ld$.parent(ta, null, n)) {
-          return;
-        }
-        if (!(type = this.typematch({
-          p: p,
-          n: n
-        }))) {
-          return;
-        }
-        if (type & 1) {
-          while (ta) {
-            if (ta.parentNode === p) {
-              break;
-            }
-            ta = ta.parentNode;
+      if (ld$.parent(ta, null, n)) {
+        return;
+      }
+      if (!(type = this.typematch({
+        parent: p,
+        node: n,
+        display: d
+      }))) {
+        return;
+      }
+      if (type & 1) {
+        while (ta) {
+          if (ta.parentNode === p) {
+            break;
           }
+          ta = ta.parentNode;
         }
-        if (ta.nodeType === Element.TEXT_NODE) {
+      }
+      if (ta.nodeType === Element.TEXT_NODE) {
+        if (n.parentNode) {
           n.parentNode.removeChild(n);
-          text = ta.textContent;
-          [document.createTextNode(text.substring(0, so)), n, document.createTextNode(text.substring(so))].map(function(it){
-            return ta.parentNode.insertBefore(it, ta);
-          });
-          ta.parentNode.removeChild(ta);
+        }
+        text = ta.textContent;
+        [document.createTextNode(text.substring(0, so)), n, document.createTextNode(text.substring(so))].map(function(it){
+          return ta.parentNode.insertBefore(it, ta);
+        });
+        ta.parentNode.removeChild(ta);
+      } else {
+        if (n.parentNode) {
+          n.parentNode.removeChild(n);
+        }
+        if (display === 'block') {
+          r1 = document.createRange();
+          r2 = document.createRange();
+          r1.setStart(p, 0);
+          r1.setEnd(sc, so);
+          r2.setStart(sc, so);
+          r2.setEnd(p.nextSibling || p, p.nextSibling
+            ? 0
+            : p.childNodes
+              ? p.childNodes.length
+              : p.textContent.length);
+          lstr = r1.toString().length;
+          rstr = r2.toString().length;
+          if (lstr > rstr) {
+            ta.parentNode.insertBefore(n, ta.nextSibling);
+          } else {
+            ta.parentNode.insertBefore(n, ta);
+          }
         } else {
-          n.parentNode.removeChild(n);
           ta.parentNode.insertBefore(n, ta);
         }
-        return this.editable.fire('change');
       }
+      return this.editable.fire('change');
     }
   });
   return ((ref$ = window.editable).mod || (ref$.mod = {})).register('dragger', hub);

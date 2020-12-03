@@ -5,10 +5,10 @@ block body
   .w-1024.mx-auto.rwd.my-4.d-flex
     .m-2.mr-4
       .list-group
-        .list-group-item(draggable="true") Item 1
-        .list-group-item(draggable="true") Item 2
-        .list-group-item(draggable="true") Item 3
-        .list-group-item(draggable="true") Item 4
+        .list-group-item(draggable="true",data-name="button") button
+        .list-group-item(draggable="true",data-name="image") image
+        .list-group-item(draggable="true",data-name="table") table
+        .list-group-item(draggable="true",data-name="list") list
     .flex-grow-1
       div#root(hostable)
         div#d1(editable)
@@ -34,4 +34,5 @@ block script
   +script("js/editable/mod/focalbox.js")
   +script("js/editable/mod/dragger.js")
   +script("js/editable/mod/plainpaste.js")
+  +script("js/editable/mod/drag-insert.js")
   +script("js/index.js")
