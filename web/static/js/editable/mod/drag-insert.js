@@ -1,17 +1,114 @@
 (function(it){
   return it();
 })(function(){
-  var main, ref$;
+  var getCode, main, ref$;
+  getCode = function(name){
+    return (function(){
+      switch (name) {
+      case 'button':
+        return {
+          "type": "tag",
+          "name": "div",
+          "style": [],
+          "attr": [],
+          "cls": ["btn", "btn-primary"],
+          "child": [{
+            "type": "text",
+            "value": " Button ",
+            "child": []
+          }]
+        };
+      case 'list':
+        return {
+          "type": "tag",
+          "name": "ul",
+          "style": [],
+          "attr": [],
+          "cls": [],
+          "child": [{
+            "type": "tag",
+            "name": "li",
+            "style": [],
+            "attr": [],
+            "cls": [],
+            "child": [{
+              "type": "text",
+              "value": "List",
+              "child": []
+            }]
+          }]
+        };
+      case 'image':
+        return {
+          "type": "tag",
+          "name": "img",
+          "style": [],
+          "attr": [["src", "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"]],
+          "cls": [],
+          "child": []
+        };
+      case 'table':
+        return {
+          "type": "tag",
+          "name": "table",
+          "style": [],
+          "attr": [],
+          "cls": [],
+          "child": [{
+            "type": "tag",
+            "name": "tbody",
+            "style": [],
+            "attr": [],
+            "cls": [],
+            "child": [{
+              "type": "tag",
+              "name": "tr",
+              "style": [],
+              "attr": [],
+              "cls": [],
+              "child": [{
+                "type": "tag",
+                "name": "td",
+                "style": [],
+                "attr": [],
+                "cls": [],
+                "child": [{
+                  "type": "text",
+                  "value": "table",
+                  "child": []
+                }]
+              }]
+            }]
+          }]
+        };
+      default:
+        return {
+          "type": "tag",
+          "name": "span",
+          "style": [],
+          "attr": [],
+          "cls": [],
+          "child": [{
+            "type": "text",
+            "value": "dummy",
+            "child": []
+          }]
+        };
+      }
+    }());
+  };
   main = {
     events: {
       dragstart: function(e){
-        var n, data, x$;
+        var n, name, data, x$;
         n = e.target;
         if (!ld$.parent(n, '[ld=menu]')) {
           return;
         }
+        name = n.getAttribute('data-name') || 'unnamed';
         data = {
-          name: n.getAttribute('data-name') || 'unnamed',
+          name: name,
+          dom: getCode(name),
           mode: n.getAttribute('data-mode') || 'block'
         };
         x$ = e.dataTransfer;

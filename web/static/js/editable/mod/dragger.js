@@ -202,7 +202,7 @@
         return blocktmp.get({
           name: data.data.name
         }).then(function(dom){
-          return deserialize(dom);
+          return datadom.deserialize(dom);
         }).then(function(ret){
           ta.parentNode.insertBefore(ret.node, ta);
           return this$.editable.fire('change');
@@ -212,21 +212,11 @@
       } else {
         node = document.createElement(data.mode === 'block' ? 'div' : 'span');
         node.setAttribute('editable', true);
-        node.innerText = JSON.stringify(data);
-        node.innerHTML = (function(){
-          switch (data.name) {
-          case 'button':
-            return "<div class=\"btn btn-primary\"> Button </div>";
-          case 'list':
-            return "<ul><li>List</li></ul>";
-          case 'image':
-            return "<img src=\"https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png\"/>";
-          case 'table':
-            return "<table><tr><td>table</td></tr></table>";
-          default:
-            return "dummy";
-          }
-        }());
+        node.setAttribute('draggable', true);
+        datadom.deserialize(data.dom).then(function(ret){
+          node.innerHTML = "";
+          return node.appendChild(ret.node);
+        });
         return this.insert({
           range: range,
           parent: parent,

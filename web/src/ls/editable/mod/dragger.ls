@@ -96,7 +96,6 @@ dragger.prototype = Object.create(Object.prototype) <<< do
   render: (opt={}) ->
     range = opt.range
     if !range => return @caret.box.style <<< display: \none
-    #parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
     {parent, type} = @hostmatch {parent: range.startContainer, mode: opt.mode}
     insertable = type
 
@@ -116,8 +115,6 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     # always render(null) to clear since we might have already rendered before and not yet clear it.
     @render!
     if !(range and @root.contains(evt.target)) => return
-    #parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
-    #if !parent => return
     parent = range.startContainer
 
     # src node exists - user is dragging inner element.
@@ -128,7 +125,7 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
     if data.type == \block =>
       blocktmp.get {name: data.data.name}
-        .then (dom) ~> deserialize dom
+        .then (dom) ~> datadom.deserialize dom
         .then (ret) ~>
           ta.parentNode.insertBefore ret.node, ta
           @editable.fire \change
@@ -137,13 +134,11 @@ dragger.prototype = Object.create(Object.prototype) <<< do
       # test code
       node = document.createElement(if data.mode == \block => \div else \span)
       node.setAttribute \editable, true
-      node.innerText = JSON.stringify(data)
-      node.innerHTML = switch data.name
-      | \button => """<div class="btn btn-primary"> Button </div>"""
-      | \list => """<ul><li>List</li></ul>"""
-      | \image => """<img src="https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"/>"""
-      | \table => """<table><tr><td>table</td></tr></table>"""
-      | otherwise => """dummy"""
+      node.setAttribute \draggable, true
+      datadom.deserialize data.dom
+        .then (ret) ->
+          node.innerHTML = ""
+          node.appendChild ret.node
       @insert {range, parent, node, mode: (data.mode or 'inline')}
 
   insert: ({parent, range, node, mode}) ->
