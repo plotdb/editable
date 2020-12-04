@@ -14,8 +14,12 @@ html
     +css("css/index.css")
     block head
   body
-
-    block body
+    //-
+      additional div is needed when we need mix-blend-mode work in our editable, which is used for focus mode
+      alternatively, we can set html,body background #fff.
+       - https://stackoverflow.com/questions/60210336/
+       - https://www.w3.org/TR/css-backgrounds-3/#body-background
+    div: block body
     +script("assets/lib/bootstrap.native/main/bootstrap-native.min.js")
     +script("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js")
     +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
