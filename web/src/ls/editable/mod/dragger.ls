@@ -126,7 +126,6 @@ dragger.prototype = Object.create(Object.prototype) <<< do
 
     # src node doesn't exist - unknown data source. we parse dataTransfer for further information
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
-    data = if (json = evt.dataTransfer.getData \mode/inline) => JSON.parse json else {}
     if data.type == \block =>
       blocktmp.get {name: data.data.name}
         .then (dom) ~> deserialize dom

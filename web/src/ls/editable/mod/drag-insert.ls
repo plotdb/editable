@@ -10,7 +10,7 @@ main = do
         mode: n.getAttribute(\data-mode) or \block
       e.dataTransfer
         ..setData \application/json, JSON.stringify(data)
-        ..setData "mode/#{data.mode}", JSON.stringify(data)
+        ..setData "mode/#{data.mode}", ''
         ..setDragImage main.ghost[data.mode], 10, 10
       e.stopPropagation!
   ghost: do

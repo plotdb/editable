@@ -1,4 +1,3 @@
- - drag for both block / inline type
  - image resizer
  - block tree group / ungroup mechanism
  - inline style editing and toolbar
@@ -8,3 +7,6 @@
  - serializer / deserializer
  - config panel
  - layer panel
+
+done
+ - drag for both block / inline type

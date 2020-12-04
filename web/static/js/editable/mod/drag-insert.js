@@ -16,7 +16,7 @@
         };
         x$ = e.dataTransfer;
         x$.setData('application/json', JSON.stringify(data));
-        x$.setData("mode/" + data.mode, JSON.stringify(data));
+        x$.setData("mode/" + data.mode, '');
         x$.setDragImage(main.ghost[data.mode], 10, 10);
         return e.stopPropagation();
       }

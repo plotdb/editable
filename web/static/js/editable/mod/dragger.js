@@ -198,9 +198,6 @@
       data = (json = evt.dataTransfer.getData('application/json'))
         ? JSON.parse(json)
         : {};
-      data = (json = evt.dataTransfer.getData('mode/inline'))
-        ? JSON.parse(json)
-        : {};
       if (data.type === 'block') {
         return blocktmp.get({
           name: data.data.name

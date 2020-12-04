@@ -47,8 +47,8 @@ contenteditable.set-editable = set-editable = ({target, x, y}) ->
   #  - 2nd click: extend selection to target end
   #  - 3rd click: extend selection to target start
   #  - drag: select certain range of content
-  #  - shift-click: extend / shrink select start / end
-  #  - shift-array: extend / shrink select start / end
+  #  - shift-click: extend / shrink select start / end <-- TODO
+  #  - shift-arrow: extend / shrink select start / end
 
   # use current selection to prepare range.
   # we only do this when -
