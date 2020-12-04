@@ -17,11 +17,14 @@
         x$ = e.dataTransfer;
         x$.setData('application/json', JSON.stringify(data));
         x$.setData("mode/" + data.mode, JSON.stringify(data));
-        x$.setDragImage(main.ghost, 10, 10);
+        x$.setDragImage(main.ghost[data.mode], 10, 10);
         return e.stopPropagation();
       }
     },
-    ghost: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"20\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$),
+    ghost: {
+      block: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"9\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"11\" y=\"0\" width=\"9\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$),
+      inline: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"0\" y=\"4\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"0\" y=\"8\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"0\" y=\"12\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$)
+    },
     init: function(){
       return this.mod.dragInsert = {};
     }

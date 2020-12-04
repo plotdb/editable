@@ -28,7 +28,7 @@ hub = do
       e.dataTransfer
         ..setData \application/json, JSON.stringify(data)
         ..setData "mode/#{mode}", ''
-        ..setDragImage hub.ghost, 10, 10
+        ..setDragImage hub.ghost[mode], 10, 10
       d.set-drag true
       e.stopPropagation!
 
@@ -39,15 +39,23 @@ hub = do
       ret = ldCaret.by-ptr {node: @root, x: e.clientX, y: e.clientY, method: \euclidean}
       if !d.contains(ret.range.startContainer) => return
       mode = e.dataTransfer.types.map(->/mode\/(.+)/.exec(it)).filter(->it).map(->it.1).0 or \inline
-      d.render {mode} <<< ret{range}
+      d.render({} <<< ret{range} <<< {mode})
     drop: (e) ->
       [n,d] = [e.target, @mod.dragger]
       e.preventDefault!
       d.drop {evt: e}
-
-  ghost: (new Image!) <<< src: "data:image/svg+xml," + encodeURIComponent("""
+  ghost: do
+    block: (new Image!) <<< src: "data:image/svg+xml," + encodeURIComponent("""
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 20 15">
-    <rect x="0" y="0" width="20" height="15" fill="rgba(0,0,0,.5)"/>
+    <rect x="0" y="0" width="9" height="15" fill="rgba(0,0,0,.5)"/>
+    <rect x="11" y="0" width="9" height="15" fill="rgba(0,0,0,.5)"/>
+    </svg>""")
+    inline: (new Image!) <<< src: "data:image/svg+xml," + encodeURIComponent("""
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" viewBox="0 0 20 15">
+    <rect x="0" y="0" width="20" height="3" fill="rgba(0,0,0,.5)"/>
+    <rect x="0" y="4" width="20" height="3" fill="rgba(0,0,0,.5)"/>
+    <rect x="0" y="8" width="20" height="3" fill="rgba(0,0,0,.5)"/>
+    <rect x="0" y="12" width="20" height="3" fill="rgba(0,0,0,.5)"/>
     </svg>""")
   init: -> @mod.dragger = new dragger {root: @root, editable: @}
 
@@ -72,20 +80,25 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     document.body.appendChild @caret.box
   contains: (n) -> @root.contains n
   set-drag: -> @dragging = it
-  typematch: ({node,parent,mode}) ->
-    [n,p,m,type] = [node,parent,mode,0]
-    if !(p and (n or m)) => return 0
-    # block
-    if p.hasAttribute(\hostable) and m == \inline => type += 1
-    # inline-block
-    if p.hasAttribute(\editable) and p.getAttribute(\editable) != \false and m == \inline => type += 2
-    return type
+  hostmatch: ({parent,mode}) ->
+    while parent
+      if parent.hasAttribute
+        type = 0
+        # block
+        if mode == \block and parent.hasAttribute(\hostable) => type += 1
+        # inline-block
+        if mode == \inline and parent.hasAttribute(\editable) and
+        parent.getAttribute(\editable) != \false => type += 2
+        if type => return {parent, type}
+      if (parent = parent.parentNode) == @root => parent = null
+    return {parent, type}
 
   render: (opt={}) ->
     range = opt.range
     if !range => return @caret.box.style <<< display: \none
-    parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
-    insertable = @typematch {parent} <<< opt{mode} <<< (if @src => {node: @src} else {})
+    #parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
+    {parent, type} = @hostmatch {parent: range.startContainer, mode: opt.mode}
+    insertable = type
 
     box = range.getBoundingClientRect!
     @caret.range = range
@@ -103,8 +116,9 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     # always render(null) to clear since we might have already rendered before and not yet clear it.
     @render!
     if !(range and @root.contains(evt.target)) => return
-    parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
-    if !parent => return
+    #parent = ld$.parent range.startContainer, "[hostable],[editable]:not([editable=false])", @root
+    #if !parent => return
+    parent = range.startContainer
 
     # src node exists - user is dragging inner element.
     mode = evt.dataTransfer.types.map(->/mode\/(.+)/.exec(it)).filter(->it).map(->it.1).0 or \inline
@@ -143,7 +157,8 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     # prevent from inserting to self
     if ld$.parent ta, null, n => return
     # test if the container accept something like n
-    if !(type = @typematch({parent: p, node: n, mode: m})) => return
+    {parent,type} = @hostmatch({parent: p, mode: m})
+    if !(p = parent) => return
     # hostable type only accepts insertion under root element
     if (type .&. 1) =>
       while ta

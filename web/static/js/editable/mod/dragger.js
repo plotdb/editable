@@ -39,12 +39,12 @@
         x$ = e.dataTransfer;
         x$.setData('application/json', JSON.stringify(data));
         x$.setData("mode/" + mode, '');
-        x$.setDragImage(hub.ghost, 10, 10);
+        x$.setDragImage(hub.ghost[mode], 10, 10);
         d.setDrag(true);
         return e.stopPropagation();
       },
       dragover: function(e){
-        var d, ret, mode, ref$;
+        var d, ret, mode, ref$, ref1$;
         e.preventDefault();
         d = this.mod.dragger;
         ret = ldCaret.byPtr({
@@ -63,9 +63,7 @@
         }).map(function(it){
           return it[1];
         })[0] || 'inline';
-        return d.render((ref$ = {
-          mode: mode
-        }, ref$.range = ret.range, ref$));
+        return d.render((ref$ = (ref1$ = {}, ref1$.range = ret.range, ref1$), ref$.mode = mode, ref$));
       },
       drop: function(e){
         var ref$, n, d;
@@ -76,7 +74,10 @@
         });
       }
     },
-    ghost: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"20\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$),
+    ghost: {
+      block: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"9\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"11\" y=\"0\" width=\"9\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$),
+      inline: (ref$ = new Image(), ref$.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n<rect x=\"0\" y=\"0\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"0\" y=\"4\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"0\" y=\"8\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n<rect x=\"0\" y=\"12\" width=\"20\" height=\"3\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>"), ref$)
+    },
     init: function(){
       return this.mod.dragger = new dragger({
         root: this.root,
@@ -118,36 +119,46 @@
     setDrag: function(it){
       return this.dragging = it;
     },
-    typematch: function(arg$){
-      var node, parent, mode, ref$, n, p, m, type;
-      node = arg$.node, parent = arg$.parent, mode = arg$.mode;
-      ref$ = [node, parent, mode, 0], n = ref$[0], p = ref$[1], m = ref$[2], type = ref$[3];
-      if (!(p && (n || m))) {
-        return 0;
+    hostmatch: function(arg$){
+      var parent, mode, type;
+      parent = arg$.parent, mode = arg$.mode;
+      while (parent) {
+        if (parent.hasAttribute) {
+          type = 0;
+          if (mode === 'block' && parent.hasAttribute('hostable')) {
+            type += 1;
+          }
+          if (mode === 'inline' && parent.hasAttribute('editable') && parent.getAttribute('editable') !== 'false') {
+            type += 2;
+          }
+          if (type) {
+            return {
+              parent: parent,
+              type: type
+            };
+          }
+        }
+        if ((parent = parent.parentNode) === this.root) {
+          parent = null;
+        }
       }
-      if (p.hasAttribute('hostable') && m === 'inline') {
-        type += 1;
-      }
-      if (p.hasAttribute('editable') && p.getAttribute('editable') !== 'false' && m === 'inline') {
-        type += 2;
-      }
-      return type;
+      return {
+        parent: parent,
+        type: type
+      };
     },
     render: function(opt){
-      var range, ref$, parent, insertable, box;
+      var range, ref$, parent, type, insertable, box;
       opt == null && (opt = {});
       range = opt.range;
       if (!range) {
         return ref$ = this.caret.box.style, ref$.display = 'none', ref$;
       }
-      parent = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
-      insertable = this.typematch(import$((ref$ = {
-        parent: parent
-      }, ref$.mode = opt.mode, ref$), this.src
-        ? {
-          node: this.src
-        }
-        : {}));
+      ref$ = this.hostmatch({
+        parent: range.startContainer,
+        mode: opt.mode
+      }), parent = ref$.parent, type = ref$.type;
+      insertable = type;
       box = range.getBoundingClientRect();
       this.caret.range = range;
       return import$(this.caret.box.style, {
@@ -168,10 +179,7 @@
       if (!(range && this.root.contains(evt.target))) {
         return;
       }
-      parent = ld$.parent(range.startContainer, "[hostable],[editable]:not([editable=false])", this.root);
-      if (!parent) {
-        return;
-      }
+      parent = range.startContainer;
       mode = evt.dataTransfer.types.map(function(it){
         return /mode\/(.+)/.exec(it);
       }).filter(function(it){
@@ -242,11 +250,11 @@
       if (ld$.parent(ta, null, n)) {
         return;
       }
-      if (!(type = this.typematch({
+      ref$ = this.hostmatch({
         parent: p,
-        node: n,
         mode: m
-      }))) {
+      }), parent = ref$.parent, type = ref$.type;
+      if (!(p = parent)) {
         return;
       }
       if (type & 1) {
