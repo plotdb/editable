@@ -1,0 +1,80 @@
+extends /base.pug
+block head
+  style(type="text/css"): :stylus
+    *[ld=resizable]
+      touch-action: none
+      user-select: none
+block body
+  .w-1024.mx-auto.rwd.my-4
+    .d-flex.align-items-center
+      .flex-grow-1.border.p-4(ld="resizable") hello
+      .flex-grow-1.border.p-4(ld="resizable") hello
+      .flex-grow-1.border.p-4(ld="resizable") hello
+    //-
+      img#img.border(style="width:300px;touch-action:none",
+      src="https://play.nintendo.com/images/Masthead_Kirby.17345b1513ac044897cfc243542899dce541e8dc.9afde10b.png")
+block script
+  script: :lsc
+    ld$.find '.flex-grow-1'
+      .map -> [it, it.getBoundingClientRect!width]
+      .map -> it.0.style.width = "#{it.1}px"
+    obj = do
+      edges: {top: true, left: true, bottom: true, right: true}
+      listeners: 
+        move: (e) ->
+          if true =>
+            d = e.deltaRect
+            nodes = [e.target,null,null]
+            if d.left => nodes.1 = nodes.0.previousSibling or nodes.0.nextSibling
+            if d.right => nodes.2 = nodes.0.nextSibling or nodes.0.previousSibling
+            boxes = nodes.map -> if !it => null else it.getBoundingClientRect!
+            nodes.map (d,i) -> if d and !d.w => d.w = boxes[i].width
+            if nodes.2 =>
+              dw = d.right
+              nodes.0.w = nodes.0.w + dw
+              nodes.2.w = nodes.2.w - dw
+              nodes.0.style <<< { width: "#{nodes.0.w}px" }
+              nodes.2.style <<< { width: "#{nodes.2.w}px" }
+            if nodes.1 =>
+              dw = d.left
+              nodes.0.w = nodes.0.w - dw
+              nodes.1.w = nodes.1.w + dw
+              nodes.0.style <<< { width: "#{boxes.0.width - dw}px" }
+              nodes.1.style <<< { width: "#{boxes.1.width + dw}px" }
+            if !(nodes.1 and nodes.2) =>
+              nodes.0.style <<< { height: "#{e.rect.height}px" }
+            nodes.filter(->it).map ->
+              b = it.getBoundingClientRect!
+              it.innerText = b.width
+          else
+            w = e.rect.width
+            h = e.rect.height
+            n1 = e.target
+            b1 = n1.getBoundingClientRect!
+            n2 = e.target.nextSibling
+            b2 = n2.getBoundingClientRect!
+            dw = w - b1.width 
+            dh = h - b1.height 
+            n1.style <<< do
+              width: "#{b1.width + dw}px", height: "#{b1.height + dh}px"
+            n2.style <<< do
+              width: "#{b2.width - dw}px", height: "#{b2.height}px"
+
+    ld$.find('.flex-grow-1').map -> interact(it).resizable obj
+
+  //-script: :lsc
+    obj = do
+      edges: {top: true, left: true, bottom: true, right: true}
+      listeners: 
+        move: (e) ->
+          {x,y} = e.target.dataset
+          x = parseFloat(x or 0) + e.deltaRect.left
+          y = parseFloat(y or 0) + e.deltaRect.top
+          w = e.rect.width
+          h = e.rect.height
+          #w = h * box.width / box.height
+          e.target.style <<< do
+            width: "#{w}px", height: "#{h}px"
+            #transform: "translate(#{x}px,#{y}px)"
+    ld$.find('.flex-grow-1').map -> interact(it).resizable obj
+    

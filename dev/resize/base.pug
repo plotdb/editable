@@ -1,0 +1,32 @@
+//- module
+doctype html
+html
+  block vars
+  include /../../static/assets/lib/bootstrap.ldui/main/index.pug
+  head
+    block prehead
+    +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css")
+    +css("assets/lib/ldiconfont/main/ldif.min.css")
+    +css("https://fonts.googleapis.com/css?family=Roboto:300,400,700|Roboto+Mono")
+    +css("assets/lib/ldcover/main/ldcv.min.css")
+    +css("assets/lib/focalbox/main/focalbox.min.css")
+    +css("css/index.css")
+    block head
+  body
+    //-
+      additional div is needed when we need mix-blend-mode work in our editable, which is used for focus mode
+      alternatively, we can set html,body background #fff.
+       - https://stackoverflow.com/questions/60210336/
+       - https://www.w3.org/TR/css-backgrounds-3/#body-background
+    div: block body
+    +script("assets/lib/bootstrap.native/main/bootstrap-native.min.js")
+    +script("assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js")
+    +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("assets/lib/@loadingio/debounce.js/main/debounce.min.js")
+    +script("assets/lib/ldcaret/main/ldcaret.min.js")
+    +script("assets/lib/ldcover/main/ldcv.min.js")
+    +script("assets/lib/ldview/main/ldview.min.js")
+    +script("assets/lib/focalbox/main/focalbox.min.js")
+    +script("assets/lib/interactjs/main/interact.min.js")
+    block script
