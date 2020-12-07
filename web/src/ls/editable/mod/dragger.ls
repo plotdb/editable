@@ -123,13 +123,18 @@ dragger.prototype = Object.create(Object.prototype) <<< do
 
     # src node doesn't exist - unknown data source. we parse dataTransfer for further information
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
+    console.log data
     if data.type == \block =>
-      blocktmp.get {name: data.data.name}
-        .then (dom) ~> datadom.deserialize dom
+      plugin = ->
+        n = document.createElement \div
+        n.innerText = 'Hello World!'
+        return {node: n}
+      datadom.deserialize data.dom, plugin
         .then (ret) ~>
-          ta.parentNode.insertBefore ret.node, ta
-          @editable.fire \change
-        .catch -> console.log it
+          n = ret.node
+          n.setAttribute \editable, true
+          n.setAttribute \draggable, true
+          @insert {range, parent, node: ret.node, mode: (data.mode or 'block')}
     else
       # test code
       node = document.createElement(if data.mode == \block => \div else \span)
@@ -139,7 +144,7 @@ dragger.prototype = Object.create(Object.prototype) <<< do
         .then (ret) ->
           node.innerHTML = ""
           node.appendChild ret.node
-      @insert {range, parent, node, mode: (data.mode or 'inline')}
+      @insert {range, parent, node, mode: (data.mode or 'block')}
 
   insert: ({parent, range, node, mode}) ->
     [p,r,n,m] = [parent, range, node, mode]

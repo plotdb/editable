@@ -1,6 +1,12 @@
 <-(->it!) _
 
 get-code = (name) ->
+  if name == 'sample'
+    ret = do
+      type: \block
+      name: \features
+      version: \0.0.1
+    return ret
   return switch name
   | \button => {"type":"tag","name":"div","style":[],"attr":[],"cls":["btn","btn-primary"],"child":[{"type":"text","value":" Button ","child":[]}]}
   | \list => {"type":"tag","name":"ul","style":[],"attr":[],"cls":[],"child":[{"type":"tag","name":"li","style":[],"attr":[],"cls":[],"child":[{"type":"text","value":"List","child":[]}]}]}
@@ -18,6 +24,7 @@ main = do
         name: name
         dom: get-code(name)
         mode: n.getAttribute(\data-mode) or \block
+        type: \block
       e.dataTransfer
         ..setData \application/json, JSON.stringify(data)
         ..setData "mode/#{data.mode}", ''
@@ -37,6 +44,6 @@ main = do
     <rect x="0" y="12" width="20" height="3" fill="rgba(0,0,0,.5)"/>
     </svg>""")
   init: ->
-    @mod.drag-insert = {}
+    @mod.block = {}
 
-window.editable.{}mod.register \drag-insert, main
+window.editable.{}mod.register \block, main

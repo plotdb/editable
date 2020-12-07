@@ -171,7 +171,7 @@
       });
     },
     drop: function(arg$){
-      var evt, ref$, range, node, parent, mode, data, json, this$ = this;
+      var evt, ref$, range, node, parent, mode, data, json, plugin, this$ = this;
       evt = arg$.evt;
       ref$ = [this.caret.range, this.src], range = ref$[0], node = ref$[1];
       this.src = null;
@@ -198,16 +198,27 @@
       data = (json = evt.dataTransfer.getData('application/json'))
         ? JSON.parse(json)
         : {};
+      console.log(data);
       if (data.type === 'block') {
-        return blocktmp.get({
-          name: data.data.name
-        }).then(function(dom){
-          return datadom.deserialize(dom);
-        }).then(function(ret){
-          ta.parentNode.insertBefore(ret.node, ta);
-          return this$.editable.fire('change');
-        })['catch'](function(it){
-          return console.log(it);
+        plugin = function(){
+          var n;
+          n = document.createElement('div');
+          n.innerText = 'Hello World!';
+          return {
+            node: n
+          };
+        };
+        return datadom.deserialize(data.dom, plugin).then(function(ret){
+          var n;
+          n = ret.node;
+          n.setAttribute('editable', true);
+          n.setAttribute('draggable', true);
+          return this$.insert({
+            range: range,
+            parent: parent,
+            node: ret.node,
+            mode: data.mode || 'block'
+          });
         });
       } else {
         node = document.createElement(data.mode === 'block' ? 'div' : 'span');
@@ -221,7 +232,7 @@
           range: range,
           parent: parent,
           node: node,
-          mode: data.mode || 'inline'
+          mode: data.mode || 'block'
         });
       }
     },
