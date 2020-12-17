@@ -10,7 +10,7 @@ get-code = (name) ->
   return switch name
   | \button => {"type":"tag","name":"div","style":[],"attr":[],"cls":["btn","btn-primary"],"child":[{"type":"text","value":" Button ","child":[]}]}
   | \list => {"type":"tag","name":"ul","style":[],"attr":[],"cls":[],"child":[{"type":"tag","name":"li","style":[],"attr":[],"cls":[],"child":[{"type":"text","value":"List","child":[]}]}]}
-  | \image => {"type":"tag","name":"img","style":[],"attr":[["src","https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"]],"cls":[],"child":[]}
+  | \image => {"type":"tag","name":"img","style":[],"attr":[["resizable","true"],["src","https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"]],"cls":[],"child":[]}
   | \table => {"type":"tag","name":"table","style":[],"attr":[],"cls":[],"child":[{"type":"tag","name":"tbody","style":[],"attr":[],"cls":[],"child":[{"type":"tag","name":"tr","style":[],"attr":[],"cls":[],"child":[{"type":"tag","name":"td","style":[],"attr":[],"cls":[],"child":[{"type":"text","value":"table","child":[]}]}]}]}]}
   | otherwise => {"type":"tag","name":"span","style":[],"attr":[],"cls":[],"child":[{"type":"text","value":"dummy","child":[]}]}
 

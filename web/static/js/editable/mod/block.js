@@ -52,7 +52,7 @@
           "type": "tag",
           "name": "img",
           "style": [],
-          "attr": [["src", "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"]],
+          "attr": [["resizable", "true"], ["src", "https://www.google.com/logos/doodles/2020/december-holidays-days-2-30-6753651837108830.5-s.png"]],
           "cls": [],
           "child": []
         };
