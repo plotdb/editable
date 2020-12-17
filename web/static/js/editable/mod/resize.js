@@ -15,6 +15,7 @@
         if (n._itr) {
           return;
         }
+        n.style.touchAction = 'none';
         n._itr = interact(n).resizable(mod.config.resizable);
         return n.addEventListener('click', function(e){
           if (e.target.getAttribute('draggable') === 'true') {
@@ -46,7 +47,7 @@
         },
         listeners: {
           move: function(e){
-            var d, nodes, boxes, dw;
+            var d, nodes, boxes, display, dw, ref$;
             d = e.deltaRect;
             nodes = [e.target, null, null];
             if (d.left) {
@@ -74,30 +75,38 @@
                 return d.w = boxes[i].width;
               }
             });
-            if (nodes[2]) {
-              dw = d.right;
-              nodes[0].w = nodes[0].w + dw;
-              nodes[2].w = nodes[2].w - dw;
-              nodes[0].style.width = nodes[0].w + "px";
-              nodes[2].style.width = nodes[2].w + "px";
+            display = getComputedStyle(nodes[0]).display;
+            if (/inline/.exec(display)) {
+              if (d.left) {
+                dw = d.left;
+                nodes[0].w = nodes[0].w - dw;
+                return ref$ = nodes[0].style, ref$.width = (boxes[0].width - dw) + "px", ref$;
+              } else if (d.right) {
+                dw = d.right;
+                nodes[0].w = nodes[0].w + dw;
+                return ref$ = nodes[0].style, ref$.width = nodes[0].w + "px", ref$;
+              } else {
+                return ref$ = nodes[0].style, ref$.height = e.rect.height + "px", ref$;
+              }
+            } else {
+              if (nodes[2]) {
+                dw = d.right;
+                nodes[0].w = nodes[0].w + dw;
+                nodes[2].w = nodes[2].w - dw;
+                nodes[0].style.width = nodes[0].w + "px";
+                nodes[2].style.width = nodes[2].w + "px";
+              }
+              if (nodes[1]) {
+                dw = d.left;
+                nodes[0].w = nodes[0].w - dw;
+                nodes[1].w = nodes[1].w + dw;
+                nodes[0].style.width = (boxes[0].width - dw) + "px";
+                nodes[1].style.width = (boxes[1].width + dw) + "px";
+              }
+              if (!(nodes[1] && nodes[2])) {
+                return ref$ = nodes[0].style, ref$.height = e.rect.height + "px", ref$;
+              }
             }
-            if (nodes[1]) {
-              dw = d.left;
-              nodes[0].w = nodes[0].w - dw;
-              nodes[1].w = nodes[1].w + dw;
-              nodes[0].style.width = (boxes[0].width - dw) + "px";
-              nodes[1].style.width = (boxes[1].width + dw) + "px";
-            }
-            if (!(nodes[1] && nodes[2])) {
-              nodes[0].style.height = e.rect.height + "px";
-            }
-            return nodes.filter(function(it){
-              return it;
-            }).map(function(it){
-              var b;
-              b = it.getBoundingClientRect();
-              return it.innerText = b.width;
-            });
           }
         }
       }

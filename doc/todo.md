@@ -1,4 +1,5 @@
  - image resizer
+   - need better support in diagonal dragging
  - block tree group / ungroup mechanism
  - inline style editing and toolbar
  - inline function ( clone, delete, etc )
