@@ -15,14 +15,25 @@
         if (n._itr) {
           return;
         }
-        return n._itr = interact(n).resizable(mod.config.resizable);
+        n._itr = interact(n).resizable(mod.config.resizable);
+        return n.addEventListener('click', function(e){
+          if (e.target.getAttribute('draggable') === 'true') {
+            return;
+          }
+          return e.stopPropagation();
+        });
       },
       mousedown: function(e){
-        var n;
-        if (!((n = e.target) && n._itr)) {
+        var n, box, ref$, x, y, min;
+        if (!((n = e.target) && n._itr && n.getBoundingClientRect)) {
           return;
         }
-        return n.setAttribute('draggable', false);
+        box = n.getBoundingClientRect();
+        ref$ = [e.clientX, e.clientY], x = ref$[0], y = ref$[1];
+        min = Math.min.apply(Math, [box.x - x, box.y - y, box.x + box.width - x, box.y + box.height - y].map(function(it){
+          return Math.abs(it);
+        }));
+        return n.setAttribute('draggable', min >= 20 ? 'true' : 'false');
       }
     },
     config: {
