@@ -17,29 +17,29 @@
     "npm": ">=6.4.1"
   },
   "scripts": {
-    "start": "npx server -r web"
+    "start": "npx server -r web -o tru"
   },
   "devDependencies": {
-    "@loadingio/debounce.js": "0.0.1",
-    "@loadingio/ldquery": "^1.1.1",
-    "@plotdb/datadom": "0.0.1",
-    "@plotdb/datahub": "0.0.6",
-    "@plotdb/json0": "0.0.1",
-    "bootstrap": "^4.5.2",
+    "@loadingio/debounce.js": "~0.0.1",
+    "@loadingio/ldquery": "~1.1.1",
+    "@plotdb/datadom": "~0.0.1",
+    "@plotdb/datahub": "~0.0.6",
+    "@plotdb/json0": "~0.0.1",
+    "bootstrap": "~4.5.2",
     "bootstrap.ldui": "github:loadingio/bootstrap.ldui",
-    "bootstrap.native": "^3.0.13",
-    "fedep": "0.0.7",
-    "focalbox": "0.0.3",
-    "jsoneditor": "^9.1.1",
-    "ldcaret": "^2.1.0",
-    "ldcover": "^1.1.0",
+    "bootstrap.native": "~3.0.13",
+    "fedep": "~0.0.7",
+    "focalbox": "~0.0.3",
+    "jsoneditor": "~9.1.1",
+    "ldcaret": "~2.1.0",
+    "ldcover": "~1.1.0",
     "ldiconfont": "github:loadingio/ldiconfont",
-    "ldview": "0.0.2",
+    "ldview": "~0.0.2",
     "sharedb-wrapper": "github:zbryikt/sharedb-wrapper",
-    "stylus": "^0.54.5",
-    "template": "github:zbryikt/template#v2.1.6",
-    "uglify-js": "=3.2.0",
-    "uglifycss": "0.0.29"
+    "stylus": "~0.54.5",
+    "template": "github:zbryikt/template#v2.1.7",
+    "uglify-js": "~3.2.0",
+    "uglifycss": "~0.0.29"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",
