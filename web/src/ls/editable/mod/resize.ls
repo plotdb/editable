@@ -33,14 +33,18 @@ mod = do
           lock-ratio =  e.shiftKey
           d = e.deltaRect
           nodes = [e.target,null,null]
-          if d.left => nodes.1 = nodes.0.previousSibling or nodes.0.nextSibling
-          if d.right => nodes.2 = nodes.0.nextSibling or nodes.0.previousSibling
+          if d.left or d.top => nodes.1 = nodes.0.previousSibling or nodes.0.nextSibling
+          if d.right or d.bottom => nodes.2 = nodes.0.nextSibling or nodes.0.previousSibling
           nodes = nodes.map -> if !(it and it.getBoundingClientRect) => null else it
           boxes = nodes.map -> if !it => null else it.getBoundingClientRect!
           nodes.map (d,i) ->
             if d and !d.w => d.w = boxes[i].width
             if d and !d.h => d.h = boxes[i].height
           display = getComputedStyle(nodes.0).display
+          ps = getComputedStyle(nodes.0.parentNode)
+          flex = ps.display
+          flex-dir = ps.flexDirection
+          flex-justify = ps.justifyContent
           if /inline/.exec(display) =>
             [dw, dh, dir] = [0, 0, 0]
             if d.left => [dw,dir] = [-d.left, dir + 1]
@@ -59,7 +63,7 @@ mod = do
             nodes.0.style <<< { width: "#{nodes.0.w}px" }
             nodes.0.style <<< { height: "#{nodes.0.h}px" }
 
-          else
+          else if /flex/.exec(flex)
             if nodes.2 =>
               dw = d.right
               nodes.0.w = nodes.0.w + dw
@@ -74,6 +78,9 @@ mod = do
               nodes.1.style <<< { width: "#{boxes.1.width + dw}px" }
             if !(nodes.1 and nodes.2) =>
               nodes.0.style <<< { height: "#{e.rect.height}px" }
+
+          else # ignore
+
 
   init: ->
 

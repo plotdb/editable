@@ -54,15 +54,15 @@
         },
         listeners: {
           move: function(e){
-            var draggable, lockRatio, d, nodes, boxes, display, ref$, dw, dh, dir, favorW;
+            var draggable, lockRatio, d, nodes, boxes, display, ps, flex, flexDir, flexJustify, ref$, dw, dh, dir, favorW;
             draggable = mod.config.resizable.edges;
             lockRatio = e.shiftKey;
             d = e.deltaRect;
             nodes = [e.target, null, null];
-            if (d.left) {
+            if (d.left || d.top) {
               nodes[1] = nodes[0].previousSibling || nodes[0].nextSibling;
             }
-            if (d.right) {
+            if (d.right || d.bottom) {
               nodes[2] = nodes[0].nextSibling || nodes[0].previousSibling;
             }
             nodes = nodes.map(function(it){
@@ -88,6 +88,10 @@
               }
             });
             display = getComputedStyle(nodes[0]).display;
+            ps = getComputedStyle(nodes[0].parentNode);
+            flex = ps.display;
+            flexDir = ps.flexDirection;
+            flexJustify = ps.justifyContent;
             if (/inline/.exec(display)) {
               ref$ = [0, 0, 0], dw = ref$[0], dh = ref$[1], dir = ref$[2];
               if (d.left) {
@@ -116,7 +120,7 @@
               nodes[0].h = nodes[0].h + dh;
               nodes[0].style.width = nodes[0].w + "px";
               return ref$ = nodes[0].style, ref$.height = nodes[0].h + "px", ref$;
-            } else {
+            } else if (/flex/.exec(flex)) {
               if (nodes[2]) {
                 dw = d.right;
                 nodes[0].w = nodes[0].w + dw;
@@ -134,7 +138,7 @@
               if (!(nodes[1] && nodes[2])) {
                 return ref$ = nodes[0].style, ref$.height = e.rect.height + "px", ref$;
               }
-            }
+            } else {}
           }
         }
       }
