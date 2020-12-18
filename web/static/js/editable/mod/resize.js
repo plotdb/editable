@@ -38,16 +38,19 @@
       }
     },
     config: {
+      oppositeDraggable: false,
       resizable: {
         edges: {
-          top: true,
-          left: true,
+          top: false,
+          left: false,
           bottom: true,
           right: true
         },
         listeners: {
           move: function(e){
-            var d, nodes, boxes, display, dw, ref$;
+            var draggable, lockRatio, d, nodes, boxes, display, ref$, dw, dh, dir, favorW;
+            draggable = mod.config.resizable.edges;
+            lockRatio = e.shiftKey;
             d = e.deltaRect;
             nodes = [e.target, null, null];
             if (d.left) {
@@ -72,22 +75,41 @@
             });
             nodes.map(function(d, i){
               if (d && !d.w) {
-                return d.w = boxes[i].width;
+                d.w = boxes[i].width;
+              }
+              if (d && !d.h) {
+                return d.h = boxes[i].height;
               }
             });
             display = getComputedStyle(nodes[0]).display;
             if (/inline/.exec(display)) {
+              ref$ = [0, 0, 0], dw = ref$[0], dh = ref$[1], dir = ref$[2];
               if (d.left) {
-                dw = d.left;
-                nodes[0].w = nodes[0].w - dw;
-                return ref$ = nodes[0].style, ref$.width = (boxes[0].width - dw) + "px", ref$;
-              } else if (d.right) {
-                dw = d.right;
-                nodes[0].w = nodes[0].w + dw;
-                return ref$ = nodes[0].style, ref$.width = nodes[0].w + "px", ref$;
-              } else {
-                return ref$ = nodes[0].style, ref$.height = e.rect.height + "px", ref$;
+                ref$ = [-d.left, dir + 1], dw = ref$[0], dir = ref$[1];
               }
+              if (d.right) {
+                ref$ = [d.right, dir + 4], dw = ref$[0], dir = ref$[1];
+              }
+              if (d.top) {
+                ref$ = [-d.top, dir + 2], dh = ref$[0], dir = ref$[1];
+              }
+              if (d.bottom) {
+                ref$ = [d.bottom, dir + 8], dh = ref$[0], dir = ref$[1];
+              }
+              if (lockRatio) {
+                favorW = dir & 5 && dir & 10
+                  ? dw > dh ? true : false
+                  : dir & 5 ? true : false;
+                if (favorW) {
+                  dh = dw / nodes[0].w * nodes[0].h;
+                } else {
+                  dw = dh / nodes[0].h * nodes[0].w;
+                }
+              }
+              nodes[0].w = nodes[0].w + dw;
+              nodes[0].h = nodes[0].h + dh;
+              nodes[0].style.width = nodes[0].w + "px";
+              return ref$ = nodes[0].style, ref$.height = nodes[0].h + "px", ref$;
             } else {
               if (nodes[2]) {
                 dw = d.right;
