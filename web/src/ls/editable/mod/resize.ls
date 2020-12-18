@@ -7,7 +7,10 @@ mod = do
       if !n.hasAttribute(\resizable) or n.getAttribute(\resizable) == \false => return
       if n._itr => return
       n.style.touchAction = \none
-      n._itr = interact(n).resizable mod.config.resizable
+      is-inline = /inline/.exec(getComputedStyle(n).display)
+      edges = {top: !is-inline, left: !is-inline, bottom: true, right: true}
+      n._itr = interact(n).resizable(mod.config.resizable <<< {edges})
+
       # draggable != true -> resize mode. in this case we don't want to focus after resize done.
       # stop propagation in clicking handler can do this trick.
       n.addEventListener \click, (e) ->
@@ -22,7 +25,6 @@ mod = do
       )
       n.setAttribute \draggable, (if min >= 20 => \true else \false)
   config:
-    opposite-draggable: false
     resizable:
       edges: {top: false, left: false, bottom: true, right: true}
       listeners:

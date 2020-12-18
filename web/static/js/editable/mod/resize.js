@@ -5,7 +5,7 @@
   mod = {
     events: {
       mouseover: function(e){
-        var n;
+        var n, isInline, edges, ref$;
         if (!((n = e.target) && e.target.hasAttribute)) {
           return;
         }
@@ -16,7 +16,14 @@
           return;
         }
         n.style.touchAction = 'none';
-        n._itr = interact(n).resizable(mod.config.resizable);
+        isInline = /inline/.exec(getComputedStyle(n).display);
+        edges = {
+          top: !isInline,
+          left: !isInline,
+          bottom: true,
+          right: true
+        };
+        n._itr = interact(n).resizable((ref$ = mod.config.resizable, ref$.edges = edges, ref$));
         return n.addEventListener('click', function(e){
           if (e.target.getAttribute('draggable') === 'true') {
             return;
@@ -38,7 +45,6 @@
       }
     },
     config: {
-      oppositeDraggable: false,
       resizable: {
         edges: {
           top: false,
