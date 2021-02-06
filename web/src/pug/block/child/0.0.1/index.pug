@@ -1,0 +1,8 @@
+div
+  div(plug="test") this is plug from child
+  script(type="@plotdb/block"): :lsc
+    {
+      pkg: do
+        extend: "parent@0.0.1"
+      init: -> console.log \ok
+    }
