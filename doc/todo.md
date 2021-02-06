@@ -1,3 +1,6 @@
+ - test case
+   - 為了長期開發, 應該將必要的測試逐項紀錄, 方便後期重頭驗證
+     - 最好還可以自動化
  - resize
    - support following
      - flex (parent)
