@@ -210,7 +210,7 @@
           });
           node = node.childNodes[0];
           node.parentNode.removeChild(node);
-          console.log(node);
+          node.setAttribute('block', '');
           node.setAttribute('draggable', true);
           return this$.insert({
             range: range,

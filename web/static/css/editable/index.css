@@ -1,4 +1,7 @@
 /* for debugging { */
+*[block] {
+  outline: 1px solid rgba(255,192,0,0.3);
+}
 *[editable] {
   outline: 1px solid rgba(255,0,0,0.3);
   padding: 1em;

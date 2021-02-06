@@ -132,7 +132,7 @@ dragger.prototype = Object.create(Object.prototype) <<< do
           bi.attach {root: node}
           node = node.childNodes.0
           node.parentNode.removeChild(node)
-          console.log node
+          node.setAttribute \block, ''
           node.setAttribute \draggable, true
           @insert {range, parent, node: node, mode: (data.mode or 'block')}
 
