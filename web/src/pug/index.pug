@@ -5,11 +5,18 @@ block body
   .w-1024.mx-auto.rwd.my-4.d-flex
     .m-2.mr-4
       .list-group(ld="menu")
+
+        -
+          var list = ["child", "columns", "cta", "image-explain", "landing", "landing-col2",
+          "long-answer", "parent", "react-helloworld", "sample", "vue-helloworld"];
+        each item in list
+          .list-group-item(draggable="true",data-name=`${item}@0.0.1`)= item
+
         .list-group-item(draggable="true",data-name="sample") sample
-        .list-group-item(draggable="true",data-name="button",data-mode="inline") button
-        .list-group-item(draggable="true",data-name="image",data-mode="inline") image
-        .list-group-item(draggable="true",data-name="table",data-mode="block") table
-        .list-group-item(draggable="true",data-name="list",data-mode="block") list
+        .list-group-item(draggable="true",data-name="button",data-src="local",data-mode="inline") button
+        .list-group-item(draggable="true",data-name="image",data-src="local",data-mode="inline") image
+        .list-group-item(draggable="true",data-name="table",data-src="local",data-mode="block") table
+        .list-group-item(draggable="true",data-name="list",data-src="local",data-mode="block") list
     .flex-grow-1
       div#root(hostable)
         div#d1(editable)
@@ -30,6 +37,10 @@ block body
           .list-group-item(resizable,draggable,editable) item 3
 
 block script
+  +script("assets/lib/@plotdb/rescope/main/rescope.min.js")
+  +script("assets/lib/@plotdb/csscope/main/csscope.min.js")
+  +script("assets/lib/proxise/main/proxise.min.js")
+  +script("assets/lib/@plotdb/block/main/block.min.js")
   +script("js/editable/index.js")
   +script("js/editable/mod/contenteditable.js")
   +script("js/editable/mod/focalbox.js")
@@ -38,8 +49,4 @@ block script
   +script("js/editable/mod/block.js")
   +script("js/editable/mod/resize.js")
   +script("js/editable/mod/context.js")
-  +script("assets/lib/@plotdb/rescope/main/rescope.min.js")
-  +script("assets/lib/@plotdb/csscope/main/csscope.min.js")
-  +script("assets/lib/proxise/main/proxise.min.js")
-  +script("assets/lib/@plotdb/block/main/block.min.js")
   +script("js/index.js")

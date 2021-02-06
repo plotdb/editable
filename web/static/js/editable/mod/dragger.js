@@ -171,7 +171,7 @@
       });
     },
     drop: function(arg$){
-      var evt, ref$, range, node, parent, mode, data, json, plugin, this$ = this;
+      var evt, ref$, range, node, parent, mode, data, json, this$ = this;
       evt = arg$.evt;
       ref$ = [this.caret.range, this.src], range = ref$[0], node = ref$[1];
       this.src = null;
@@ -200,23 +200,22 @@
         : {};
       console.log(data);
       if (data.type === 'block') {
-        plugin = function(){
-          var n;
-          n = document.createElement('div');
-          n.innerText = 'Hello World!';
-          return {
-            node: n
-          };
-        };
-        return datadom.deserialize(data.dom, plugin).then(function(ret){
-          var n;
-          n = ret.node;
-          n.setAttribute('editable', true);
-          n.setAttribute('draggable', true);
+        return window.bmgr.get(data.name).then(function(it){
+          return it.create();
+        }).then(function(bi){
+          var node;
+          node = document.createElement("div");
+          bi.attach({
+            root: node
+          });
+          node = node.childNodes[0];
+          node.parentNode.removeChild(node);
+          console.log(node);
+          node.setAttribute('draggable', true);
           return this$.insert({
             range: range,
             parent: parent,
-            node: ret.node,
+            node: node,
             mode: data.mode || 'block'
           });
         });
@@ -224,7 +223,7 @@
         node = document.createElement(data.mode === 'block' ? 'div' : 'span');
         node.setAttribute('editable', true);
         node.setAttribute('draggable', true);
-        datadom.deserialize(data.dom).then(function(ret){
+        datadom.deserialize(data.dom || {}).then(function(ret){
           node.innerHTML = "";
           return node.appendChild(ret.node);
         });

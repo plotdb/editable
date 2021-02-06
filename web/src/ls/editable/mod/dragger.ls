@@ -125,6 +125,18 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
     console.log data
     if data.type == \block =>
+      window.bmgr.get data.name
+        .then -> it.create!
+        .then (bi) ~>
+          node = document.createElement("div")
+          bi.attach {root: node}
+          node = node.childNodes.0
+          node.parentNode.removeChild(node)
+          console.log node
+          node.setAttribute \draggable, true
+          @insert {range, parent, node: node, mode: (data.mode or 'block')}
+
+      /*
       plugin = ->
         n = document.createElement \div
         n.innerText = 'Hello World!'
@@ -135,12 +147,13 @@ dragger.prototype = Object.create(Object.prototype) <<< do
           n.setAttribute \editable, true
           n.setAttribute \draggable, true
           @insert {range, parent, node: ret.node, mode: (data.mode or 'block')}
+      */
     else
       # test code
       node = document.createElement(if data.mode == \block => \div else \span)
       node.setAttribute \editable, true
       node.setAttribute \draggable, true
-      datadom.deserialize data.dom
+      datadom.deserialize(data.dom or {})
         .then (ret) ->
           node.innerHTML = ""
           node.appendChild ret.node
