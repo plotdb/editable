@@ -102,8 +102,8 @@ dragger.prototype = Object.create(Object.prototype) <<< do
     box = range.getBoundingClientRect!
     @caret.range = range
     @caret.box.style <<< do
-      left: "#{box.x}px"
-      top: "#{box.y}px"
+      left: "#{box.x + window.pageXOffset}px"
+      top: "#{box.y + window.pageYOffset}px"
       height: "#{box.height}px"
       display: \block
       opacity: if insertable => 1 else 0.4
@@ -123,31 +123,31 @@ dragger.prototype = Object.create(Object.prototype) <<< do
 
     # src node doesn't exist - unknown data source. we parse dataTransfer for further information
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
-    console.log data
+    console.log ">", data
     if data.type == \block =>
-      window.bmgr.get data.name
-        .then -> it.create!
-        .then (bi) ~>
-          node = document.createElement("div")
-          bi.attach {root: node}
-          node = node.childNodes.0
-          node.parentNode.removeChild(node)
-          node.setAttribute \block, ''
-          node.setAttribute \draggable, true
-          @insert {range, parent, node: node, mode: (data.mode or 'block')}
+      if !data.dom =>
+        window.bmgr.get data.name
+          .then -> it.create!
+          .then (bi) ~>
+            node = document.createElement("div")
+            bi.attach {root: node}
+            node = node.childNodes.0
+            node.parentNode.removeChild(node)
+            node.setAttribute \block, ''
+            node.setAttribute \draggable, true
+            @insert {range, parent, node: node, mode: (data.mode or 'block')}
+      else
+        plugin = ->
+          n = document.createElement \div
+          n.innerText = 'Hello World!'
+          return {node: n}
+        datadom.deserialize data.dom, plugin
+          .then (ret) ~>
+            n = ret.node
+            n.setAttribute \editable, true
+            n.setAttribute \draggable, true
+            @insert {range, parent, node: ret.node, mode: (data.mode or 'block')}
 
-      /*
-      plugin = ->
-        n = document.createElement \div
-        n.innerText = 'Hello World!'
-        return {node: n}
-      datadom.deserialize data.dom, plugin
-        .then (ret) ~>
-          n = ret.node
-          n.setAttribute \editable, true
-          n.setAttribute \draggable, true
-          @insert {range, parent, node: ret.node, mode: (data.mode or 'block')}
-      */
     else
       # test code
       node = document.createElement(if data.mode == \block => \div else \span)

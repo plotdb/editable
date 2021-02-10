@@ -162,8 +162,8 @@
       box = range.getBoundingClientRect();
       this.caret.range = range;
       return import$(this.caret.box.style, {
-        left: box.x + "px",
-        top: box.y + "px",
+        left: (box.x + window.pageXOffset) + "px",
+        top: (box.y + window.pageYOffset) + "px",
         height: box.height + "px",
         display: 'block',
         opacity: insertable ? 1 : 0.4,
@@ -171,7 +171,7 @@
       });
     },
     drop: function(arg$){
-      var evt, ref$, range, node, parent, mode, data, json, this$ = this;
+      var evt, ref$, range, node, parent, mode, data, json, plugin, this$ = this;
       evt = arg$.evt;
       ref$ = [this.caret.range, this.src], range = ref$[0], node = ref$[1];
       this.src = null;
@@ -198,27 +198,50 @@
       data = (json = evt.dataTransfer.getData('application/json'))
         ? JSON.parse(json)
         : {};
-      console.log(data);
+      console.log(">", data);
       if (data.type === 'block') {
-        return window.bmgr.get(data.name).then(function(it){
-          return it.create();
-        }).then(function(bi){
-          var node;
-          node = document.createElement("div");
-          bi.attach({
-            root: node
+        if (!data.dom) {
+          return window.bmgr.get(data.name).then(function(it){
+            return it.create();
+          }).then(function(bi){
+            var node;
+            node = document.createElement("div");
+            bi.attach({
+              root: node
+            });
+            node = node.childNodes[0];
+            node.parentNode.removeChild(node);
+            node.setAttribute('block', '');
+            node.setAttribute('draggable', true);
+            return this$.insert({
+              range: range,
+              parent: parent,
+              node: node,
+              mode: data.mode || 'block'
+            });
           });
-          node = node.childNodes[0];
-          node.parentNode.removeChild(node);
-          node.setAttribute('block', '');
-          node.setAttribute('draggable', true);
-          return this$.insert({
-            range: range,
-            parent: parent,
-            node: node,
-            mode: data.mode || 'block'
+        } else {
+          plugin = function(){
+            var n;
+            n = document.createElement('div');
+            n.innerText = 'Hello World!';
+            return {
+              node: n
+            };
+          };
+          return datadom.deserialize(data.dom, plugin).then(function(ret){
+            var n;
+            n = ret.node;
+            n.setAttribute('editable', true);
+            n.setAttribute('draggable', true);
+            return this$.insert({
+              range: range,
+              parent: parent,
+              node: ret.node,
+              mode: data.mode || 'block'
+            });
           });
-        });
+        }
       } else {
         node = document.createElement(data.mode === 'block' ? 'div' : 'span');
         node.setAttribute('editable', true);

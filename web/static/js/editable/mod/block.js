@@ -13,7 +13,9 @@
   getCode = function(arg$){
     var node, name;
     node = arg$.node, name = arg$.name;
+    console.log(1);
     if (node.getAttribute('data-src') === 'local') {
+      console.log(2);
       return (function(){
         switch (name) {
         case 'button':
@@ -108,6 +110,7 @@
         }
       }());
     }
+    console.log(3);
     bmgr.init().then(function(){
       return bmgr.get(name);
     });
@@ -131,6 +134,7 @@
           mode: n.getAttribute('data-mode') || 'block',
           type: 'block'
         };
+        console.log(data);
         x$ = e.dataTransfer;
         x$.setData('application/json', JSON.stringify(data));
         x$.setData("mode/" + data.mode, '');

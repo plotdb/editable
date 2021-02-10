@@ -1,0 +1,23 @@
+extends /base.pug
+block prehead
+  base(href="/")
+block head
+  +css("/css/editable/index.css")
+block body
+  .d-flex.w-1200.rwd.mx-auto.my-4
+    .mr-4.border(ld="menu",style="width:200px")
+      .list-group-item(draggable="true",data-name="button",data-src="local",data-mode="inline") button
+    .flex-grow-1(style="height:100px;overflow:scroll")
+      .aspect-ratio.ratio-3by2.border: #root(hostable): .w-100.p-4(editable) Hello
+    +nbr(100)
+block script
+  +script("assets/lib/@plotdb/rescope/main/rescope.min.js")
+  +script("assets/lib/@plotdb/csscope/main/csscope.min.js")
+  +script("assets/lib/proxise/main/proxise.min.js")
+  +script("assets/lib/@plotdb/block/main/block.min.js")
+
+  +script("/js/editable/index.js")
+  +script("/js/editable/mod/contenteditable.js")
+  +script("/js/editable/mod/block.js")
+  +script("/js/editable/mod/dragger.js")
+  +script("/js/index.js")
