@@ -198,7 +198,6 @@
       data = (json = evt.dataTransfer.getData('application/json'))
         ? JSON.parse(json)
         : {};
-      console.log(">", data);
       if (data.type === 'block') {
         if (!data.dom) {
           return window.bmgr.get(data.name).then(function(it){

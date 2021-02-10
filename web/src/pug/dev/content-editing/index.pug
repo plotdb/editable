@@ -7,9 +7,8 @@ block body
   .d-flex.w-1200.rwd.mx-auto.my-4
     .mr-4.border(ld="menu",style="width:200px")
       .list-group-item(draggable="true",data-name="button",data-src="local",data-mode="inline") button
-    .flex-grow-1(style="height:100px;overflow:scroll")
+    .flex-grow-1
       .aspect-ratio.ratio-3by2.border: #root(hostable): .w-100.p-4(editable) Hello
-    +nbr(100)
 block script
   +script("assets/lib/@plotdb/rescope/main/rescope.min.js")
   +script("assets/lib/@plotdb/csscope/main/csscope.min.js")

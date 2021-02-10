@@ -13,9 +13,7 @@
   getCode = function(arg$){
     var node, name;
     node = arg$.node, name = arg$.name;
-    console.log(1);
     if (node.getAttribute('data-src') === 'local') {
-      console.log(2);
       return (function(){
         switch (name) {
         case 'button':
@@ -110,7 +108,6 @@
         }
       }());
     }
-    console.log(3);
     bmgr.init().then(function(){
       return bmgr.get(name);
     });

@@ -123,7 +123,6 @@ dragger.prototype = Object.create(Object.prototype) <<< do
 
     # src node doesn't exist - unknown data source. we parse dataTransfer for further information
     data = if (json = evt.dataTransfer.getData \application/json) => JSON.parse json else {}
-    console.log ">", data
     if data.type == \block =>
       if !data.dom =>
         window.bmgr.get data.name
