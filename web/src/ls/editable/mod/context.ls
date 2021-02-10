@@ -17,10 +17,16 @@ mod = do
         opacity: 1
         left: "#{x}px"
         top: "#{y}px"
+      @div.innerHTML = [k for k of @.contextmenu].map(-> "<div>#it</div>").join('')
+
+  contextmenu:
+    name: 'context menu'
+    list:
+      * name: 'hello world'
 
   init: ->
     @div = ld$.create name: \div
-    @div.innerText = 'hello world'
+    @div.innerText = ' ... '
     @div.style <<< do
       position: \absolute
       cursor: \pointer

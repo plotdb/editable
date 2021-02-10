@@ -1,0 +1,49 @@
+extends /base.pug
+block prehead
+  base(href="/")
+block body
+  .w-1024.rwd.mx-auto.my-4
+    div(style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-gap:1em")
+
+      .border.p-2
+        label flex
+        .d-flex.text-center.flex-wrap
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+          .border.flex-grow-1.p-4(resizable="true") hi
+
+      .border.p-2
+        label block
+        .text-center
+          .border.p-4(resizable="true") hi
+          .border.p-4(resizable="true") hi
+          .border.p-4(resizable="true") hi
+      .border.p-2
+        label inline-block
+        .text-center
+          .d-inline-block.border.p-4(resizable="true") hi
+          .d-inline-block.border.p-4(resizable="true") hi
+          .d-inline-block.border.p-4(resizable="true") hi
+      .border.p-2
+        label grid
+        div(style="display:grid;grid-template-rows:1fr 1fr;grid-template-columns:1fr 1fr")
+          .d-inline-block.border.p-4(resizable="true") hi
+          .d-inline-block.border.p-4(resizable="true") hi
+          .d-inline-block.border.p-4(resizable="true") hi
+          .d-inline-block.border.p-4(resizable="true") hi
+
+block script
+  +script("js/editable/index.js")
+  +script("js/editable/mod/resize.js")
+  script: :lsc
+    ed = new editable do
+      root: ld$.find(\#root, 0)
+    ed.init!

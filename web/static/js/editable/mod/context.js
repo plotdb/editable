@@ -14,23 +14,38 @@
         return hide(this.div);
       },
       contextmenu: function(e){
-        var x, y;
+        var x, y, k;
         e.preventDefault();
         x = e.clientX;
         y = e.clientY;
-        return import$(this.div.style, {
+        import$(this.div.style, {
           pointerEvents: 'all',
           opacity: 1,
           left: x + "px",
           top: y + "px"
         });
+        return this.div.innerHTML = (function(){
+          var results$ = [];
+          for (k in this.contextmenu) {
+            results$.push(k);
+          }
+          return results$;
+        }.call(this)).map(function(it){
+          return "<div>" + it + "</div>";
+        }).join('');
+      }
+    },
+    contextmenu: {
+      name: 'context menu',
+      list: {
+        name: 'hello world'
       }
     },
     init: function(){
       this.div = ld$.create({
         name: 'div'
       });
-      this.div.innerText = 'hello world';
+      this.div.innerText = ' ... ';
       import$(this.div.style, {
         position: 'absolute',
         cursor: 'pointer',

@@ -22,3 +22,4 @@ editable.prototype = Object.create(Object.prototype) <<< do
       m.mod.init.call @
       ({k,v}) <~ [{k,v} for k,v of (m.mod.events or {})].map _
       document.addEventListener k, (e) ~> v.call @, e
+      if m.mod.contextmenu => @{}contextmenu[m.mod.contextmenu.name] = m.mod.contextmenu

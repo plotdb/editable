@@ -1,7 +1,27 @@
 <-(->it!) _
 
 mod = do
+  contextmenu:
+    name: 'resize'
+    list:
+      * name: 'hello world'
+
+  # alternatively, use CSS resize and browser will do the job for us.
+  # compatibility: https://caniuse.com/css-resize
+  #  - plausible since this is for editing. yet it doesn't work in iOS Safari
   events: do
+    mouseup: (e) ->
+      if !((n = e.target) and e.target.hasAttribute) => return
+      if !n.hasAttribute(\resizable) or n.getAttribute(\resizable) == \false => return
+      n.style <<< overflow: "", resize: ""
+    mouseover: (e) ->
+      if !((n = e.target) and e.target.hasAttribute) => return
+      if !n.hasAttribute(\resizable) or n.getAttribute(\resizable) == \false => return
+      dir = if getComputedStyle(n).display == \block and !(getComputedStyle(n.parentNode).display in <[flex grid]>) => \vertical
+      else \both
+      n.style <<< overflow: "hidden", resize: dir
+
+    /*
     mouseover: (e) ->
       if !((n = e.target) and e.target.hasAttribute) => return
       if !n.hasAttribute(\resizable) or n.getAttribute(\resizable) == \false => return
@@ -24,6 +44,8 @@ mod = do
         Math, [box.x - x, box.y - y, box.x + box.width - x, box.y + box.height - y].map(-> Math.abs(it))
       )
       n.setAttribute \draggable, (if min >= 20 => \true else \false)
+    */
+  /*
   config:
     resizable:
       edges: {top: false, left: false, bottom: true, right: true}
@@ -80,7 +102,7 @@ mod = do
               nodes.0.style <<< { height: "#{e.rect.height}px" }
 
           else # ignore
-
+  */
 
   init: ->
 

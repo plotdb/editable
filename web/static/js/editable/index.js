@@ -62,9 +62,12 @@ editable.prototype = import$(Object.create(Object.prototype), {
       }()).map(function(arg$){
         var k, v;
         k = arg$.k, v = arg$.v;
-        return document.addEventListener(k, function(e){
+        document.addEventListener(k, function(e){
           return v.call(this$, e);
         });
+        if (m.mod.contextmenu) {
+          return (this$.contextmenu || (this$.contextmenu = {}))[m.mod.contextmenu.name] = m.mod.contextmenu;
+        }
       });
     });
   }
