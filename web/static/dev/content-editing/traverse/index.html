@@ -1,0 +1,339 @@
+<!DOCTYPE html><html><head><base href="/"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldiconfont/main/ldif.min.css"><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700|Roboto+Mono"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/focalbox/main/focalbox.min.css"><link rel="stylesheet" type="text/css" href="css/index.css"><link rel="stylesheet" type="text/css" href="/css/editable/index.css"><style type="text/css">#ph {
+  width: 3px;
+  height: 1em;
+  background: #f00;
+  display: inline-block;
+  pointer-events: none;
+}
+#ph-abs {
+  width: 3px;
+  height: 1em;
+  background: #f00;
+  display: inline-block;
+  position: absolute;
+  pointer-events: none;
+}
+</style></head><body><div><div id="ph-abs"></div><div id="ph"></div><div class="w-1024 rwd mx-auto my-4" id="root"><div class="border p-2 m-2"><div class="border border-warning p-2 m-2"><div class="border border-danger p-2 m-2 d-inline-block">111</div><div class="border border-danger p-2 m-2 d-inline-block" id="tgt" draggable="true">222</div><div class="border border-danger p-2 m-2 d-inline-block">333</div><div class="border border-danger p-2 m-2 d-inline-block">ccc<div class="border border-info d-inline-block">bbb<div class="border border-primary d-inline-block">aaa</div></div></div></div><div class="border border-warning p-2 m-2">444</div></div><div class="border p-2 m-2">555</div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcaret/main/ldcaret.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="assets/lib/focalbox/main/focalbox.min.js"></script><script type="text/javascript" src="assets/lib/interactjs/main/interact.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datahub/main/datahub.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script>var ph, phAbs, lc, delay, root, tgt, _proc, proc, handle, dragover, ping, worker, tw, handler;
+if (true) {
+  ph = ld$.find('#ph', 0);
+  phAbs = ld$.find('#ph-abs', 0);
+  lc = {
+    node: null,
+    idx: 0
+  };
+  delay = 1;
+  root = ld$.find('#root', 0);
+  tgt = ld$.find('#tgt', 0);
+  _proc = function(node, idx, box, payload){
+    var x, y, dist;
+    x = box.x + box.width / 2;
+    y = box.y + box.height / 2;
+    dist = Math.sqrt(Math.pow(payload.x - x, 2) + Math.pow(payload.y - y, 2));
+    if (!(payload.dist != null) || dist < payload.dist) {
+      payload.dist = dist;
+      payload.box = box;
+      return payload.dist = dist, payload.box = box, payload.node = node, payload.idx = idx, payload;
+    }
+  };
+  proc = function(node, idx, payload){
+    var r, box, ref$;
+    if (node.nodeType === 3) {
+      r = document.createRange();
+      r.setStart(node, idx);
+      r.setEnd(node, idx);
+      box = r.getBoundingClientRect();
+      ref$ = phAbs.style;
+      ref$.left = box.x + "px";
+      ref$.top = box.y + "px";
+      ref$.height = box.height + "px";
+      ref$.opacity = 1;
+      _proc(node, idx, box, payload);
+      return ref$ = phAbs.style, ref$.height = "0px", ref$;
+    } else if (node.nodeType === 1) {
+      if (ph.parentNode) {
+        ph.parentNode.removeChild(ph);
+      }
+      node.insertBefore(ph, node.childNodes[idx]);
+      box = ph.getBoundingClientRect();
+      _proc(node, idx, box, payload);
+      return ph.parentNode.removeChild(ph);
+    }
+  };
+  handle = function(root, payload){
+    var len, i$, idx, results$ = [], results1$ = [];
+    if (root.nodeType === 1) {
+      len = root.childNodes.length;
+      for (i$ = 0; i$ <= len; ++i$) {
+        idx = i$;
+        proc(root, idx, payload);
+        if (!root.childNodes[idx]) {
+          break;
+        }
+        results$.push(handle(root.childNodes[idx], payload));
+      }
+      return results$;
+    } else if (root.nodeType === 3) {
+      len = root.length;
+      for (i$ = 1; i$ < len; ++i$) {
+        idx = i$;
+        results1$.push(proc(root, idx, payload));
+      }
+      return results1$;
+    }
+  };
+  dragover = debounce(30, function(e){
+    var payload, box, ref$;
+    payload = {
+      x: e.clientX,
+      y: e.clientY
+    };
+    handle(root, payload);
+    box = payload.box;
+    return ref$ = phAbs.style, ref$.left = box.x + "px", ref$.top = box.y + "px", ref$.height = box.height + "px", ref$;
+  });
+  root.addEventListener('dragover', function(e){
+    e.preventDefault();
+    return lc.dragover = dragover(e);
+  });
+  root.addEventListener('drop', function(e){
+    var payload, box, ref$, node, idx, ns, range, sel;
+    lc.dragover.cancel();
+    lc.dragover = null;
+    e.preventDefault();
+    payload = {
+      x: e.clientX,
+      y: e.clientY
+    };
+    handle(root, payload);
+    box = payload.box;
+    ref$ = phAbs.style;
+    ref$.left = box.x + "px";
+    ref$.top = box.y + "px";
+    ref$.height = box.height + "px";
+    ref$.opacity = 0;
+    if (ph.parentNode) {
+      ph.parentNode.removeChild(ph);
+    }
+    node = payload.node, idx = payload.idx;
+    if (ld$.parent(node, null, tgt)) {
+      return;
+    }
+    if (node.nodeType === 1) {
+      ns = node.childNodes[idx];
+      if (ns === tgt) {
+        return;
+      }
+      if (tgt.parentNode) {
+        tgt.parentNode.removeChild(tgt);
+      }
+      return node.insertBefore(tgt, ns);
+    } else if (node.nodeType === 3) {
+      range = document.createRange();
+      sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      range.setStart(node, idx);
+      range.setEnd(node, idx);
+      range.deleteContents();
+      if (tgt.parentNode) {
+        tgt.parentNode.removeChild(tgt);
+      }
+      range.insertNode(tgt);
+      return sel.removeAllRanges();
+    }
+  });
+}
+if (false) {
+  ph = ld$.find('#ph', 0);
+  phAbs = ld$.find('#ph-abs', 0);
+  lc = {
+    node: null,
+    idx: 0
+  };
+  delay = 1;
+  root = ld$.find('#root', 0);
+  _proc = function(box, payload){
+    var x, y, dist;
+    x = box.x + box.width / 2;
+    y = box.y + box.height / 2;
+    dist = Math.sqrt(Math.pow(payload.x - x, 2) + Math.pow(payload.y - y, 2));
+    if (!(payload.dist != null) || dist < payload.dist) {
+      payload.dist = dist;
+      return payload.box = box;
+    }
+  };
+  proc = function(node, idx, payload){
+    var r;
+    return node.nodeType === 3
+      ? (r = document.createRange(), debounce(0).then(function(){
+        var box, ref$;
+        r.setStart(node, idx);
+        r.setEnd(node, idx);
+        box = r.getBoundingClientRect();
+        ref$ = phAbs.style;
+        ref$.left = box.x + "px";
+        ref$.top = box.y + "px";
+        ref$.height = box.height + "px";
+        return _proc(box, payload);
+      }).then(function(){
+        return debounce(delay);
+      }).then(function(){
+        var ref$;
+        return ref$ = phAbs.style, ref$.height = "0px", ref$;
+      }))
+      : node.nodeType === 1
+        ? debounce(0).then(function(){
+          if (ph.parentNode) {
+            ph.parentNode.removeChild(ph);
+          }
+          return node.insertBefore(ph, node.childNodes[idx]);
+        }).then(function(){
+          return debounce(delay);
+        }).then(function(){
+          var box;
+          console.log(box = ph.getBoundingClientRect());
+          return _proc(box, payload);
+        }).then(function(){
+          return ph.parentNode.removeChild(ph);
+        })
+        : Promise.resolve();
+  };
+  handle = function(root, payload){
+    var len, _;
+    if (root.nodeType === 1) {
+      len = root.childNodes.length;
+      _ = function(idx){
+        if (idx > len) {
+          return Promise.resolve();
+        }
+        return proc(root, idx, payload).then(function(){
+          if (!root.childNodes[idx]) {
+            return;
+          }
+          return handle(root.childNodes[idx], payload).then(function(){
+            return _(idx + 1);
+          });
+        });
+      };
+      return _(0);
+    } else if (root.nodeType === 3) {
+      len = root.length;
+      _ = function(idx){
+        if (idx >= len) {
+          return Promise.resolve();
+        }
+        return proc(root, idx, payload).then(function(){
+          return _(idx + 1);
+        });
+      };
+      return _(1);
+    } else {
+      return Promise.resolve();
+    }
+  };
+  root.addEventListener('click', function(e){
+    var payload;
+    payload = {
+      x: e.clientX,
+      y: e.clientY
+    };
+    return handle(root, payload).then(function(){
+      var box, ref$;
+      console.log("matched: ", payload.box);
+      box = payload.box;
+      return ref$ = phAbs.style, ref$.left = box.x + "px", ref$.top = box.y + "px", ref$.height = box.height + "px", ref$;
+    });
+  });
+}
+if (false) {
+  ph = ld$.find('#ph-abs', 0);
+  ping = function(r, n){
+    return debounce(500).then(function(){
+      var box;
+      box = r.getBoundingClientRect();
+      console.log(n, box.x, box.y);
+      return import$(ph.style, {
+        left: box.x + "px",
+        top: box.y + "px",
+        height: box.height + "px"
+      });
+    });
+  };
+  worker = function(n){
+    var r;
+    r = document.createRange();
+    r.setStart(n, 0);
+    r.setEnd(n, 1);
+    return ping(r, 'a').then(function(){
+      var cs, _;
+      if (n.nodeType === 1 && n.childNodes) {
+        cs = Array.from(n.childNodes);
+        _ = function(idx){
+          if (!cs[idx]) {
+            return Promise.resolve();
+          }
+          console.log(">", idx, cs.length, n);
+          return worker(cs[idx]).then(function(){
+            var tw, nn;
+            r.setStart(n, idx + 1);
+            tw = document.createTreeWalker(cs[idx]);
+            nn = tw.nextNode();
+            console.log(cs[idx], nn);
+            if (cs[idx + 2]) {
+              r.setEnd(n, idx + 2);
+            } else {
+              r.setEnd(n, idx + 1);
+            }
+            return ping(r, 'b');
+          }).then(function(){
+            return _(idx + 1);
+          });
+        };
+        return _(0);
+      } else {
+        _ = function(idx){
+          if (idx >= n.length) {
+            return Promise.resolve();
+          }
+          r.setStart(n, idx + 1);
+          r.setEnd(n, idx + 1);
+          return ping(r, 'c').then(function(){
+            return _(idx + 1);
+          });
+        };
+        return _(0);
+      }
+    }).then(function(){});
+  };
+  worker(ld$.find('#root', 0));
+}
+/* using treewalker */
+if (false) {
+  ph = ld$.find('#ph-abs', 0);
+  tw = document.createTreeWalker(ld$.find('#root', 0), NodeFilter.SHOW_ALL);
+  lc = {
+    cnode: tw.currentNode
+  };
+  handler = setInterval(function(){
+    var box;
+    console.log(lc.cnode);
+    if (lc.cnode) {
+      if (lc.cnode.getBoundingClientRect) {
+        box = lc.cnode.getBoundingClientRect();
+        import$(ph.style, {
+          left: box.x + "px",
+          top: box.y + "px",
+          height: box.height + "px"
+        });
+      }
+      return lc.cnode = tw.nextNode();
+    } else {
+      return clearInterval(handler);
+    }
+  }, 200);
+}
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}</script></body></html>

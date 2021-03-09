@@ -1,0 +1,43 @@
+extends /base.pug
+block prehead
+  base(href="/")
+block head
+  +css("/css/editable/index.css")
+  style(type="text/css"): :stylus
+    #ph {
+      width: 3px
+      height: 1em
+      background: #f00
+      display: inline-block
+      pointer-events: none
+    }
+    #ph-abs {
+      width: 3px
+      height: 1em
+      background: #f00
+      display: inline-block
+      position: absolute
+      pointer-events: none
+    }
+block body
+  #ph-abs
+  #ph
+  #root.w-1024.rwd.mx-auto.my-4
+    .border.p-2.m-2
+      .border.border-warning.p-2.m-2
+        .border.border-danger.p-2.m-2.d-inline-block 111
+        #tgt.border.border-danger.p-2.m-2.d-inline-block(draggable="true") 222
+        .border.border-danger.p-2.m-2.d-inline-block 333
+        .border.border-danger.p-2.m-2.d-inline-block
+          | ccc
+          .border.border-info.d-inline-block
+            | bbb
+            .border.border-primary.d-inline-block aaa
+      .border.border-warning.p-2.m-2 444
+    .border.p-2.m-2 555
+
+
+block script
+  script
+    include:lsc index.ls
+

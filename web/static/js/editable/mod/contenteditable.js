@@ -70,6 +70,7 @@
         }
       }
     }
+    console.log(p, p.getAttribute('contenteditable'));
     if (!range) {
       ld$.find(p, '[editable]').map(function(it){
         return it.setAttribute('contenteditable', false);
@@ -77,13 +78,28 @@
       range = ldCaret.byPtr({
         node: p,
         x: x,
-        y: y
+        y: y,
+        method: 'euclidean'
       }).range;
     }
     n = range.endContainer;
     if (n && n.hasAttribute && n.hasAttribute('editable')) {
       range.setEndBefore(n);
     }
+    /*if q = ld$.parent(n, '[editable]', p) =>
+      if q.getAttribute(\contenteditable) != true =>
+        r = q
+        while r
+          s = r.parentNode
+          if s == p =>
+            range.setEndAfter r
+            range.setStartAfter r
+            console.log ">", r
+            break
+          r = s
+        range.collapse true
+        console.log \here, range
+    */
     return ldCaret.set(range);
   };
   /*

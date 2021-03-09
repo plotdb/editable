@@ -1,0 +1,24 @@
+extends /base.pug
+block prehead
+  base(href="/")
+block head
+  +css("/css/editable/index.css")
+  style(type="text/css"): :stylus
+    #placeholder {
+      width: 3px
+      height: 1em
+      background: #f00
+      display: inline-block
+    }
+block body
+  .w-1024.rwd.mx-auto.my-4
+    #placeholder
+    .mb-4: #btn.btn.btn-outline-dark(draggable="true") button
+    #content.p-4.border
+      .p-4.border.d-flex
+        .p-4.border hi
+        .p-4.border hi
+        .p-4.border hi
+block script
+  script
+    include:lsc test.ls

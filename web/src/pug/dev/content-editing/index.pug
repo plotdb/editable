@@ -3,12 +3,25 @@ block prehead
   base(href="/")
 block head
   +css("/css/editable/index.css")
+  style(type="text/css"): :stylus
 block body
   .d-flex.w-1200.rwd.mx-auto.my-4
     .mr-4.border(ld="menu",style="width:200px")
       .list-group-item(draggable="true",data-name="button",data-src="local",data-mode="inline") button
     .flex-grow-1
-      .aspect-ratio.ratio-3by2.border: #root(hostable): .w-100.p-4(editable) Hello
+      #test.border.border-success(style="padding:10px;",contenteditable="true")
+        span(contenteditable="false") &#x200b;
+        .border.border-warning.m-4.d-inline-block.p-4(contenteditable="false")
+          span(contenteditable="false") &#x200b;
+          .border.border-danger.m-4.d-inline-block 1
+          span(contenteditable="false") &#x200b;
+        span(contenteditable="false") &#x200b;
+      .aspect-ratio.ratio-3by2.border: #root(hostable)
+        .w-100.p-4.x(editable)
+          | Hello
+          div(editable,style="display:inline-block;border:1px solid #f00") x
+          div(editable,style="display:inline-block;border:1px solid #f00") x
+          div(editable,style="display:inline-block;border:1px solid #f00") x
 block script
   +script("assets/lib/@plotdb/rescope/main/rescope.min.js")
   +script("assets/lib/@plotdb/csscope/main/csscope.min.js")
@@ -20,3 +33,10 @@ block script
   +script("/js/editable/mod/block.js")
   +script("/js/editable/mod/dragger.js")
   +script("/js/index.js")
+  script: :lsc
+    b = ->
+      test.focus();
+      test.insertBefore document.createTextNode('\u200b'),test.childNodes.0
+      ldCaret.set {ns: test, os: 0}
+    c = -> setInterval (->b!), 1000
+    #b!

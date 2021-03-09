@@ -66,16 +66,33 @@ contenteditable.set-editable = set-editable = ({target, x, y}) ->
       if !sel.isCollapsed and r.toString!length and
       ld$.parent(r.commonAncestorContainer, null, lc.active) => range = r
 
+  console.log p, p.getAttribute(\contenteditable)
   if !range =>
     ld$.find(p, '[editable]').map -> it.setAttribute \contenteditable, false
-    {range} = ldCaret.by-ptr {node: p, x: x, y: y}
+    {range} = ldCaret.by-ptr {node: p, x: x, y: y, method: \euclidean}
+  #if (q = ld$.parent(range.endContainer, '[editable]', p)) =>
+  #  p.setAttribute \contenteditable, false
+  #  q.setAttribute \contenteditable, true
 
   # sometimes selection from system default set end to next editable.
   # in this case, typing after selection won't work and character just disappear.
   # thus we just reset the end to before-the-end-container
   n = range.endContainer
   if n and n.hasAttribute and n.hasAttribute \editable => range.setEndBefore n
-
+  /*if q = ld$.parent(n, '[editable]', p) =>
+    if q.getAttribute(\contenteditable) != true =>
+      r = q
+      while r
+        s = r.parentNode
+        if s == p =>
+          range.setEndAfter r
+          range.setStartAfter r
+          console.log ">", r
+          break
+        r = s
+      range.collapse true
+      console.log \here, range
+  */
   ldCaret.set range
 
 /*
@@ -120,5 +137,7 @@ backspace-fix = (e) ->
     range.deleteContents!
     event.preventDefault!
 
-
+#setInterval (->
+#  console.log window.getSelection!getRangeAt(0)
+#), 1000
 window.editable.{}mod.register \contenteditable, ce
