@@ -2,6 +2,8 @@ extends /base.pug
 block prehead
   base(href="/")
 block body
+  include @/ldview/dist/ldview.pug
+  include @static/assets/lib/ldview/main/ldview.pug
   .w-1024.rwd.mx-auto.my-4
     div(style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-gap:1em")
 

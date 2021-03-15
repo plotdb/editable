@@ -4,7 +4,7 @@
   background: #f00;
   display: inline-block;
 }
-</style></head><body><div><div class="w-1024 rwd mx-auto my-4"><div id="placeholder"></div><div class="mb-4"><div class="btn btn-outline-dark" id="btn" draggable="true">button</div></div><div class="p-4 border" id="content"><div class="p-4 border d-flex"><div class="p-4 border">hi</div><div class="p-4 border">hi</div><div class="p-4 border">hi</div></div></div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcaret/main/ldcaret.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="assets/lib/focalbox/main/focalbox.min.js"></script><script type="text/javascript" src="assets/lib/interactjs/main/interact.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datahub/main/datahub.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script>var ghost, ph, lc, insert;
+</style></head><body><div><div class="w-1024 rwd mx-auto my-4"><div id="placeholder"></div><div class="mb-4"><div class="btn btn-outline-dark" id="btn" draggable="true">button</div></div><div class="p-4 border" id="content"><div class="p-4 border d-flex"><div class="p-4 border">hi</div><div class="p-4 border">hi</div><div class="p-4 border">hi</div></div></div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcaret/main/ldcaret.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="assets/lib/focalbox/main/focalbox.min.js"></script><script type="text/javascript" src="assets/lib/interactjs/main/interact.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datahub/main/datahub.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script>var ghost, ph;
 ghost = new Image();
 ghost.src = "data:image/svg+xml," + encodeURIComponent("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"15\" viewBox=\"0 0 20 15\">\n  <rect x=\"0\" y=\"0\" width=\"20\" height=\"15\" fill=\"rgba(0,0,0,.5)\"/>\n</svg>");
 ph = ld$.find('#placeholder', 0);
@@ -12,50 +12,40 @@ ph.parentNode.removeChild(ph);
 btn.addEventListener('dragstart', function(e){
   return e.dataTransfer.setDragImage(ghost, 10, 10);
 });
-content.addEventListener('dragover', function(e){
-  var ret;
-  e.preventDefault();
-  lc.count = lc.count + 1;
-  if (lc.count % 10) {
-    return;
-  }
-  ret = ldCaret.byPtr({
-    node: e.target,
-    x: e.clientX,
-    y: e.clientY,
-    method: 'vertical'
-  });
-  console.log(ret.range.startContainer, ret.range.startOffset);
-  return insert(ret.range.startContainer, ret.range.startOffset, ph);
-});
-content.addEventListener('drop', function(e){
-  var n;
-  e.preventDefault();
-  n = document.createTextNode("[]");
-  ph.parentNode.insertBefore(n, ph);
-  return ph.parentNode.removeChild(ph);
-});
-lc = {
-  count: 0
-};
-insert = function(ta, so, n){
-  var text, m;
-  lc.ta = ta;
-  lc.so = so;
-  if (ta === n) {
-    return;
-  }
-  if (ta.nodeType === Element.TEXT_NODE) {
-    if (n.parentNode) {
-      n.parentNode.removeChild(n);
-    }
-    text = ta.textContent;
-    [document.createTextNode(text.substring(0, so)), n, document.createTextNode(text.substring(so))].map(function(it){
-      return ta.parentNode.insertBefore(it, ta);
-    });
-    return ta.parentNode.removeChild(ta);
-  } else {
-    m = ta.childNodes[so];
-    return ta.insertBefore(n, m.nextSibling);
-  }
-};</script></body></html>
+content.addEventListener('dragover', function(e){});
+content.addEventListener('drop', function(e){});
+/*
+content.addEventListener \dragover, (e) ->
+  e.preventDefault!
+  lc.count = lc.count + 1
+  if (lc.count % 10) => return
+  # always preventDefault even if not in range, otherwise drop won't be triggered.
+  #d = @mod.dragger
+  #ret = ldCaret.by-ptr {node: content, x: e.clientX, y: e.clientY, method: \vertical}
+  ret = ldCaret.by-ptr {node: e.target, x: e.clientX, y: e.clientY, method: \vertical}
+  console.log ret.range.startContainer, ret.range.startOffset
+  insert ret.range.startContainer, ret.range.startOffset, ph
+  #if !d.contains(ret.range.startContainer) => return
+  #d.render({} <<< ret{range} <<< {mode})
+content.addEventListener \drop, (e) ->
+  e.preventDefault!
+  n = document.createTextNode "[]"
+  ph.parentNode.insertBefore n, ph
+  ph.parentNode.removeChild ph
+lc = {count: 0}
+insert = (ta, so, n) ->
+  lc <<< {ta, so}
+  if ta == n => return
+  if ta.nodeType == Element.TEXT_NODE
+    if n.parentNode => n.parentNode.removeChild n
+    text = ta.textContent
+    [
+      document.createTextNode text.substring(0,so)
+      n
+      document.createTextNode text.substring(so)
+    ].map -> ta.parentNode.insertBefore it, ta
+    ta.parentNode.removeChild ta
+  else
+    m = ta.childNodes[so]
+    ta.insertBefore n, m.nextSibling
+*/</script></body></html>
