@@ -38,7 +38,7 @@
     "ldview": "^0.0.2",
     "sharedb-wrapper": "github:zbryikt/sharedb-wrapper",
     "stylus": "^0.54.5",
-    "template": "github:zbryikt/template#v2.3.5",
+    "template": "github:zbryikt/template#v2.3.7",
     "uglify-js": "^3.2.0",
     "uglifycss": "^0.0.29"
   },

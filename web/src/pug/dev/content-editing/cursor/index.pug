@@ -23,20 +23,48 @@ block body
   #ph-abs
   #ph
   #root.w-1024.rwd.mx-auto.my-4(contenteditable)
+    .m-4
+      .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") EF
+      | AB
+      .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") CD
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") GH
+          .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") IJ
+            .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true")
+              .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true")
+                .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") KL
+
+    br
+
     .border.p-2.m-2
       #inner.border.border-warning.p-2.m-2
-        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="false") 111
+
+
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") 111
+        | 123
         #tgt.border.border-danger.p-2.m-2.d-inline-block(draggable="true",contenteditable="false") 222
-        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="false") 333
+        | 456
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") 333
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") 333
         .border.border-danger.p-2.m-2.d-inline-block(contenteditable="false")
           | ccc
           .border.border-info.d-inline-block
             | bbb
             .border.border-primary.d-inline-block aaa
+        br
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="false") 111
+        #tgt.border.border-danger.p-2.m-2.d-inline-block(draggable="true",contenteditable="true") 222
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") 333
+        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="false")
+          | ccc
+          .border.border-info.d-inline-block
+            | bbb
+            .border.border-primary.d-inline-block aaa
+
       .border.border-warning.p-2.m-2 444
     .border.p-2.m-2 555
 
 block script
+  +script("/assets/lib/ldcaret/main/ldcaret.min.js")
   script
     include:lsc index.ls
 
