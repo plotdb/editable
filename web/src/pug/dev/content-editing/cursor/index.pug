@@ -4,9 +4,11 @@ block prehead
 block head
   +css("/css/editable/index.css")
   style(type="text/css"): :stylus
+    /*
     body {
       caret-color: transparent
     }
+    */
     #ph {
       width: 3px
       height: 1em
@@ -25,16 +27,16 @@ block head
 block body
   #ph-abs
   #ph
-  #root.w-1024.rwd.mx-auto.my-4(contenteditable)
-    .m-4
-      .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") EF
+  #root.w-1024.rwd.mx-auto.my-4
+    #simple.m-4(contenteditable="true")
+      .border.border-danger.p-2.m-2.d-inline-block EF
       | AB
-      .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") CD
-        .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") GH
-          .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") IJ
-            .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true")
-              .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true")
-                .border.border-danger.p-2.m-2.d-inline-block(contenteditable="true") KL
+      .border.border-danger.p-2.m-2.d-inline-block CD
+        .border.border-danger.p-2.m-2.d-inline-block GH
+          .border.border-danger.p-2.m-2.d-inline-block IJ
+            .border.border-danger.p-2.m-2.d-inline-block
+              .border.border-danger.p-2.m-2.d-inline-block
+                .border.border-danger.p-2.m-2.d-inline-block KL
 
     br
 
