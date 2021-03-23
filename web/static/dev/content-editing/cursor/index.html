@@ -1,4 +1,7 @@
-<!DOCTYPE html><html><head><base href="/"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldiconfont/main/ldif.min.css"><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700|Roboto+Mono"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/focalbox/main/focalbox.min.css"><link rel="stylesheet" type="text/css" href="css/index.css"><link rel="stylesheet" type="text/css" href="/css/editable/index.css"><style type="text/css">#ph {
+<!DOCTYPE html><html><head><base href="/"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldiconfont/main/ldif.min.css"><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,700|Roboto+Mono"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/focalbox/main/focalbox.min.css"><link rel="stylesheet" type="text/css" href="css/index.css"><link rel="stylesheet" type="text/css" href="/css/editable/index.css"><style type="text/css">body {
+  caret-color: transparent;
+}
+#ph {
   width: 3px;
   height: 1em;
   background: #f00;
@@ -13,171 +16,92 @@
   position: absolute;
   pointer-events: none;
 }
-</style></head><body><div><div id="ph-abs"></div><div id="ph"></div><div class="w-1024 rwd mx-auto my-4" id="root" contenteditable><div class="m-4"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">EF</div>AB<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">CD<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">GH<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">IJ<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">KL</div></div></div></div></div></div></div><br><div class="border p-2 m-2"><div class="border border-warning p-2 m-2" id="inner"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">111</div>123<div class="border border-danger p-2 m-2 d-inline-block" id="tgt" draggable="true" contenteditable="false">222</div>456<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">333</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">333</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="false">ccc<div class="border border-info d-inline-block">bbb<div class="border border-primary d-inline-block">aaa</div></div></div><br><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="false">111</div><div class="border border-danger p-2 m-2 d-inline-block" id="tgt" draggable="true" contenteditable="true">222</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">333</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="false">ccc<div class="border border-info d-inline-block">bbb<div class="border border-primary d-inline-block">aaa</div></div></div></div><div class="border border-warning p-2 m-2">444</div></div><div class="border p-2 m-2">555</div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcaret/main/ldcaret.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="assets/lib/focalbox/main/focalbox.min.js"></script><script type="text/javascript" src="assets/lib/interactjs/main/interact.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datahub/main/datahub.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script type="text/javascript" src="/assets/lib/ldcaret/main/ldcaret.min.js"></script><script>var work, lc, phAbs;
-work = function(obj){
-  var n, i, d, nobj, nn;
-  console.log("working...");
-  n = obj.n, i = obj.i, d = obj.d;
-  if (d) {
-    if (n.nodeType === 1) {
-      if (n.childNodes[i]) {
-        nobj = {
-          n: n.childNodes[i],
-          i: 0
-        };
-        return import$(obj, nobj);
-      } else {
-        nobj = {
-          n: n.parentNode,
-          i: Array.from(n.parentNode.childNodes).indexOf(n) + 1
-        };
-        return import$(obj, nobj);
+</style></head><body><div><div id="ph-abs"></div><div id="ph"></div><div class="w-1024 rwd mx-auto my-4" id="root" contenteditable><div class="m-4"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">EF</div>AB<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">CD<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">GH<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">IJ<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">KL</div></div></div></div></div></div></div><br><div class="border p-2 m-2"><div class="border border-warning p-2 m-2" id="inner"><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">111</div>123<div class="border border-danger p-2 m-2 d-inline-block" id="tgt" draggable="true" contenteditable="false">222</div>456<div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">333</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">333</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="false">ccc<div class="border border-info d-inline-block">bbb<div class="border border-primary d-inline-block">aaa</div></div></div><br><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="false">111</div><div class="border border-danger p-2 m-2 d-inline-block" id="tgt" draggable="true" contenteditable="true">222</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="true">333</div><div class="border border-danger p-2 m-2 d-inline-block" contenteditable="false">ccc<div class="border border-info d-inline-block">bbb<div class="border border-primary d-inline-block">aaa</div></div></div></div><div class="border border-warning p-2 m-2">444</div></div><div class="border p-2 m-2">555</div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native.min.js"></script><script type="text/javascript" src="assets/lib/bootstrap.ldui/main/bootstrap.ldui.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/ldcaret/main/ldcaret.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/ldview.min.js"></script><script type="text/javascript" src="assets/lib/focalbox/main/focalbox.min.js"></script><script type="text/javascript" src="assets/lib/interactjs/main/interact.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/json0/main/json0.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datahub/main/datahub.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/datadom/main/datadom.min.js"></script><script type="text/javascript" src="/assets/lib/ldcaret/main/ldcaret.min.js"></script><script>var move, phAbs;
+move = function(opt){
+  var _, ret, ref$, n, i, d, ph, x$, range, box;
+  opt == null && (opt = {});
+  _ = function(obj){
+    var n, i, d, nn;
+    n = obj.n, i = obj.i, d = obj.d;
+    if (d) {
+      if (n.nodeType === 1) {
+        if (n.childNodes[i]) {
+          obj.n = n.childNodes[i];
+          obj.i = 0;
+        } else {
+          obj.n = n.parentNode;
+          obj.i = Array.from(n.parentNode.childNodes).indexOf(n) + 1;
+        }
+      } else if (n.nodeType === 3) {
+        if (i < n.length) {
+          obj.i = i = i + 1;
+        }
+        if (i === n.length) {
+          obj.n = n.parentNode;
+          obj.i = Array.from(n.parentNode.childNodes).indexOf(n) + 1;
+        }
       }
-    } else if (n.nodeType === 3) {
-      if (i < n.length) {
-        obj.i++;
-      }
-      if (obj.i === n.length) {
-        nobj = {
-          n: n.parentNode,
-          i: Array.from(n.parentNode.childNodes).indexOf(n) + 1
-        };
-        return import$(obj, nobj);
+    } else {
+      if (n.nodeType === 1) {
+        if (n.childNodes[i - 1]) {
+          nn = n.childNodes[i - 1];
+          obj.n = nn;
+          obj.i = nn.length || nn.childNodes.length;
+        } else {
+          obj.n = n.parentNode;
+          obj.i = Array.from(n.parentNode.childNodes).indexOf(n);
+        }
+      } else if (n.nodeType === 3) {
+        if (i > 0) {
+          obj.i = i = i - 1;
+        }
+        if (i === 0) {
+          obj.n = n.parentNode;
+          obj.i = Array.from(n.parentNode.childNodes).indexOf(n);
+        }
       }
     }
-  } else {
-    if (n.nodeType === 1) {
-      if (n.childNodes[i - 1]) {
-        nn = n.childNodes[i - 1];
-        nobj = {
-          n: nn,
-          i: nn.length || nn.childNodes.length
-        };
-        return import$(obj, nobj);
-      } else {
-        nobj = {
-          n: n.parentNode,
-          i: Array.from(n.parentNode.childNodes).indexOf(n)
-        };
-        return import$(obj, nobj);
-      }
-    } else if (n.nodeType === 3) {
-      if (i > 0) {
-        obj.i--;
-      }
-      if (obj.i === 0) {
-        nobj = {
-          n: n.parentNode,
-          i: Array.from(n.parentNode.childNodes).indexOf(n)
-        };
-        return import$(obj, nobj);
-      }
+    return obj;
+  };
+  ret = ldCaret.get();
+  ref$ = _({
+    n: ret.ne,
+    i: ret.oe,
+    d: opt.inc
+  }), n = ref$.n, i = ref$.i, d = ref$.d;
+  if (n.nodeType === 3) {
+    if (i === 0 || i === n.length) {
+      ref$ = _({
+        n: n,
+        i: i,
+        d: d
+      }), n = ref$.n, i = ref$.i, d = ref$.d;
     }
   }
-};
-lc = {
-  obj: null
+  if (n.nodeType === 1) {
+    ph = document.createTextNode('\u200b');
+    n.insertBefore(ph, n.childNodes[i]);
+  }
+  x$ = range = document.createRange();
+  x$.setStart(n, i);
+  x$.setEnd(n, i + (ph ? 1 : 0));
+  box = range.getBoundingClientRect();
+  ref$ = phAbs.style;
+  ref$.left = box.x + "px";
+  ref$.top = box.y + "px";
+  if (ph) {
+    n.removeChild(ph);
+  }
+  return ldCaret.set(range);
 };
 phAbs = ld$.find('#ph-abs', 0);
 document.body.addEventListener('keydown', function(e){
-  var ref$, ret, n, i;
-  if ((ref$ = e.keyCode) === 37 || ref$ === 39) {
-    return;
-  }
-  ret = ldCaret.get();
-  if (!lc.obj) {
-    lc.obj = {
-      n: ret.ne,
-      i: ret.oe
-    };
-    console.log("lc.obj:", lc.obj);
-  }
-  ref$ = lc.obj, n = ref$.n, i = ref$.i;
-  if (n.nodeType === 1) {
-    lc.ph = document.createTextNode('\u200b');
-    n.insertBefore(lc.ph, n.childNodes[i]);
-    i++;
-  }
-  ret.ne = ret.ns = n;
-  ret.oe = ret.os = i;
-  console.log("!ldcaret.set: ", ret);
-  ldCaret.set(ret);
-  debounce(0).then(function(){
-    var inc, ret, str;
-    inc = false;
-    if (lc.ph) {
-      ret = ldCaret.get();
-      if (lc.ph.textContent === '\u200b') {
-        inc = true;
-        lc.ph.parentNode.removeChild(lc.ph);
-      } else {
-        if (/\u200b/g.exec(lc.ph.textContent)) {
-          ret.os = ret.oe = ret.oe - 1;
-        }
-        lc.ph.textContent = lc.ph.textContent.replace(/\u200b/g, '');
-      }
-      str = lc.ph.textContent;
-      console.log("!ldcaret.set(2): ", ret);
-      lc.ph = null;
-      return ldCaret.set(ret);
-    }
-  });
-  return lc.obj = null;
-});
-document.body.addEventListener('keydown', function(e){
-  var ref$, ret, n, i, range;
+  var ref$;
   if (!((ref$ = e.keyCode) === 37 || ref$ === 39)) {
     return;
   }
-  if (lc.ph && lc.ph.parentNode) {
-    lc.ph.parentNode.removeChild(lc.ph);
-    lc.ph = null;
-  }
   e.preventDefault();
-  if (!lc.obj) {
-    ret = ldCaret.get();
-    console.log(ret);
-    lc.obj = {
-      n: ret.ne,
-      i: ret.oe
-    };
-  }
-  lc.obj.d = e.keyCode === 39;
-  work(lc.obj);
-  console.log("node type: ", lc.obj.n.nodeType);
-  if (lc.obj.n.nodeType === 3) {
-    console.log('hit');
-    if (lc.obj.i === 0 || lc.obj.i === lc.obj.n.length) {
-      work(lc.obj);
-    }
-  }
-  if (lc.obj.n.nodeType === 1) {
-    ref$ = lc.obj, n = ref$.n, i = ref$.i;
-    lc.ph = document.createTextNode('\u200b');
-    n.insertBefore(lc.ph, n.childNodes[i]);
-    range = document.createRange();
-    range.setStart(lc.obj.n, lc.obj.i);
-    range.setEnd(lc.obj.n, lc.obj.i + 1);
-    ret = range.getBoundingClientRect();
-    ref$ = phAbs.style;
-    ref$.left = ret.x + "px";
-    ref$.top = ret.y + "px";
-    n.removeChild(lc.ph);
-    lc.ph = null;
-  } else {
-    range = document.createRange();
-    range.setStart(lc.obj.n, lc.obj.i);
-    range.setEnd(lc.obj.n, lc.obj.i);
-    ret = range.getBoundingClientRect();
-    ref$ = phAbs.style;
-    ref$.left = ret.x + "px";
-    ref$.top = ret.y + "px";
-  }
-  ldCaret.set(range);
-  return console.log("set: ", lc.obj);
-});
-function import$(obj, src){
-  var own = {}.hasOwnProperty;
-  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
-  return obj;
-}</script></body></html>
+  return move({
+    inc: e.keyCode === 39
+  });
+});</script></body></html>
